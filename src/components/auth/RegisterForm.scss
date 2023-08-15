@@ -1,0 +1,23 @@
+.login-card {
+  width: 400px;
+  height: 500px;
+  border: 10px;
+}
+
+.login-header {
+
+  background-color: #000000;
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.window-height {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover; /* Ajusta el tamaño de la imagen para cubrir todo el fondo */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+}
