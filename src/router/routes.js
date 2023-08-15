@@ -1,4 +1,5 @@
 import RegisterForm from 'src/components/auth/RegisterForm.vue';
+import About from 'src/components/About.vue';
 
 const routes = [
   {
@@ -10,6 +11,11 @@ const routes = [
       { path: '/registro', component: RegisterForm }
     ]
   },
+  {
+    path: '/about',
+    component: About,
+  },
+  
 
   {
     path: '/:catchAll(.*)*',

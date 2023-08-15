@@ -97,15 +97,16 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/directory" active-class="q-item-no-link-highlighting">
-          <q-item-section avatar>
-            <q-icon name="info"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Acerca de  </q-item-label>
-            <q-item-label caption>Caption</q-item-label>
-          </q-item-section>
-        </q-item>
+        <q-item to="/about" active-class="q-item-no-link-highlighting">
+  <q-item-section avatar>
+    <q-icon name="info" />
+  </q-item-section>
+  <q-item-section>
+    <q-item-label>Acerca de</q-item-label>
+    <q-item-label caption>Caption</q-item-label>
+  </q-item-section>
+</q-item>
+
 
       </q-list>
     </q-drawer>
