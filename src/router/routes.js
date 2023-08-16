@@ -23,15 +23,14 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'registro', component: () => import('components/auth/RegisterForm.vue') }
+      { path: 'registro', component: () => import('components/auth/RegisterForm.vue'), },
+      { path: '/about', component: () => import('components/About.vue')},
     ]
   },
-  {
-    path: '/about',
-    component: About,
-  },
-
-
+      { path: '/login', component: () => import('components/auth/LoginForm.vue') },
+      { path: '/registro', component: RegisterForm },
+      { path: '/about', component: () => import('components/About.vue')},
+  
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')

@@ -1,8 +1,16 @@
 <template>
+  
   <div class="about-container">
     <div class="about-title">
       <h5 class="text-center">Acerca de</h5>
     </div>
+    <div class="col-12 col-md-4 col-sm-6 my-card-wrapper">
+        <q-card @mouseover="hoverOver(-1)" @mouseout="hoverOutTimeout(-1)" class="my-card text-center box-shadow logo-card" flat bordered>
+          <q-card-section>
+            <q-img src="../assets/logo_inovasis.png" class="logo-image" />
+          </q-card-section>
+        </q-card>
+      </div>
     <div class="about-content">
       <p class="text-center text-black text-h6">
         Esta web app busca brindar una experiencia excepcional a nuestros usuarios.
@@ -13,7 +21,7 @@
       </p>
     </div>
     <div class="row text-center">
-      <div v-for="(card, index) in cards" :key="index" class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
+      <div v-for="(card, index) in cards" :key="index" class="col-md-4 col-lg-4 col-xs-12 col-sm-12 my-card-wrapper">
         <q-card @mouseover="hoverOver(index)" @mouseout="hoverOutTimeout(index)" class="my-card text-center box-shadow" flat bordered>
           <q-img :src="card.image" />
 
@@ -84,10 +92,11 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  
 }
 
 .about-title {
-  margin-bottom: 20px;
+  margin-bottom: 0 auto;
 }
 
 .my-card {
@@ -117,10 +126,23 @@ export default {
 .about-content {
   text-align: center; /* Centra el contenido */
   max-width: 800px; /* Limita el ancho del párrafo */
-  margin: 0 auto; /* Centra el contenedor */
+  margin: 20px; /* Centra el contenedor */
 }
 .text-overline {
   font-size: 14px;
   color: #ff5100;
+}
+.my-card-wrapper {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Agrega transiciones para suavizar el cambio de transformación y sombra */
+  
+}
+.my-card-wrapper:hover {
+  transform: scale(1.05); /* Aplica una escala ligeramente mayor cuando el mouse está encima */
+  box-shadow: 0px 10px 20px rgba(106, 106, 106, 0.541); /* Agrega sombra cuando el mouse está encima */
+}
+.logo-card {
+  width: 300px; /* Ancho más grande */
+  height: 180px; /* Alto más grande */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 </style>

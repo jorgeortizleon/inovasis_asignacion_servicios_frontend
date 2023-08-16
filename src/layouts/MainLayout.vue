@@ -103,17 +103,6 @@
     <q-item-label caption>Caption</q-item-label>
   </q-item-section>
 </q-item>
-
-
-        <q-item to="/directory" active-class="q-item-no-link-highlighting">
-          <q-item-section avatar>
-            <q-icon name="info" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Acerca de </q-item-label>
-            <q-item-label caption>Caption</q-item-label>
-          </q-item-section>
-        </q-item>
       </q-list>
 
        <div style="position:absolute; bottom: 20px; margin-left: auto; margin-right: auto; left:0; right:0; text-align:center">

@@ -1,22 +1,26 @@
 <template>
-  <q-page class="window-height window-width row justify-center items-center"
-    style="background: linear-gradient(#012d7f, #63a1e5);">
+  <q-page class="window-height window-width row justify-center items-center" style="background: linear-gradient(to bottom right, #0375bc, #ffffff);">
     <div class="column q-pa-lg">
       <div class="row">
         <q-card square class="shadow-24 login-card">
           <q-card-section class="login-header">
             <h4 class="text-h5 text-white q-my-md">INOVASIS</h4>
-
           </q-card-section>
           <q-card-section>
-            <q-form @submit.prevent="login" class="q-px-sm q-pt-xl" ref="form">
-              <q-input square clearable v-model="email" type="email" label="Email" :rules="emailRules">
+            <q-form @submit.prevent="autenticar" class="q-px-sm q-pt-xl" ref="form">
+              <q-input square clearable v-model="username" label="Nombre de Usuario" :rules="usernameRules">
                 <template v-slot:prepend>
-                  <q-icon name="email" />
+                  <q-icon name="account_circle" />
                 </template>
               </q-input>
-              <q-input square clearable v-model="password" :type="showPassword ? 'text' : 'password'" label="Password"
-                :rules="passwordRules">
+              <q-input
+                square
+                clearable
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                label="Contraseña"
+                :rules="passwordRules"
+              >
                 <template v-slot:prepend>
                   <q-icon name="lock" />
                 </template>
@@ -25,12 +29,10 @@
                     @click="showPassword = !showPassword" />
                 </template>
               </q-input>
-              <!-- <q-toggle v-model="remember" label="Recordarme" color="primary" /> -->
             </q-form>
           </q-card-section>
           <q-card-actions class="q-px-lg">
-            <q-btn unelevated size="lg" color="blue" class="full-width text-white" label="Iniciar sesión" type="submit"
-              @click.prevent="autenticar" />
+            <q-btn unelevated size="lg" color="blue" class="full-width text-white" label="Iniciar sesión" @click.prevent="autenticar" />
           </q-card-actions>
           <q-card-section class="text-center q-pa-sm">
             <!-- <p class="text-grey-6">Olvidaste tu contraseña?</p> -->
@@ -44,22 +46,22 @@
 <script>
 import axios from "axios";
 import { useQuasar } from "quasar";
-const $q = useQuasar()
+const $q = useQuasar();
 
 export default {
   data: () => ({
-    email: "",
+    username: "",
     password: "",
     error: false,
     showPassword: false,
-
   }),
   methods: {
-
     async autenticar() {
-      let response = {};
       try {
-        response = await axios.post("http://localhost:8181/usuarios/login?username=" + this.email + "&password=" + this.password);
+        const response = await axios.post("http://localhost:8181/usuarios/login", {
+          username: this.username,
+          password: this.password,
+        });
         if (response.status === 200) {
           console.log(response.data);
           console.log(response.status);
@@ -88,14 +90,10 @@ export default {
         });
       }
     },
-
   },
   computed: {
-    emailRules() {
-      return [
-        (v) => !!v || "El email es requerido.",
-        (v) => /.+@.+/.test(v) || "El email debe tener un formato válido.",
-      ];
+    usernameRules() {
+      return [(v) => !!v || "El nombre de usuario es requerido."];
     },
     passwordRules() {
       return [(v) => !!v || "La contraseña es requerida."];
@@ -104,7 +102,27 @@ export default {
 };
 </script>
 
-
 <style lang="scss" scoped>
 @import './LoginForm.scss';
+
+.login-card {
+  width: 400px;
+  height: 500px;
+  border: 10px;
+}
+
+.login-header {
+  background-color: #0375bc;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-image {
+  max-width: 100px; /* Ajusta el tamaño máximo de la imagen según tus necesidades */
+  max-height: 100px; /* Ajusta el tamaño máximo de la imagen según tus necesidades */
+}
 </style>
