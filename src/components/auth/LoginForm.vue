@@ -1,11 +1,12 @@
 <template>
-  <q-page class="window-height window-width row justify-center items-center" style="background: linear-gradient(#012d7f, #63a1e5);">
+  <q-page class="window-height window-width row justify-center items-center"
+    style="background: linear-gradient(#012d7f, #63a1e5);">
     <div class="column q-pa-lg">
       <div class="row">
         <q-card square class="shadow-24 login-card">
           <q-card-section class="login-header">
             <h4 class="text-h5 text-white q-my-md">INOVASIS</h4>
-            
+
           </q-card-section>
           <q-card-section>
             <q-form @submit.prevent="login" class="q-px-sm q-pt-xl" ref="form">
@@ -14,33 +15,25 @@
                   <q-icon name="email" />
                 </template>
               </q-input>
-              <q-input
-                square
-                clearable
-                v-model="password"
-                :type="showPassword ? 'text' : 'password'"
-                label="Password"
-                :rules="passwordRules"
-              >
+              <q-input square clearable v-model="password" :type="showPassword ? 'text' : 'password'" label="Password"
+                :rules="passwordRules">
                 <template v-slot:prepend>
                   <q-icon name="lock" />
                 </template>
                 <template v-slot:append>
-                  <q-icon
-                    :name="showPassword ? 'visibility' : 'visibility_off'"
-                    class="cursor-pointer"
-                    @click="showPassword = !showPassword"
-                  />
+                  <q-icon :name="showPassword ? 'visibility' : 'visibility_off'" class="cursor-pointer"
+                    @click="showPassword = !showPassword" />
                 </template>
               </q-input>
-              <q-toggle v-model="remember" label="Recordarme" color="primary" />
+              <!-- <q-toggle v-model="remember" label="Recordarme" color="primary" /> -->
             </q-form>
           </q-card-section>
           <q-card-actions class="q-px-lg">
-            <q-btn unelevated size="lg" color="blue" class="full-width text-white" label="Iniciar sesión" type="submit" />
+            <q-btn unelevated size="lg" color="blue" class="full-width text-white" label="Iniciar sesión" type="submit"
+              @click.prevent="autenticar" />
           </q-card-actions>
           <q-card-section class="text-center q-pa-sm">
-            <p class="text-grey-6">Olvidaste tu contraseña?</p>
+            <!-- <p class="text-grey-6">Olvidaste tu contraseña?</p> -->
           </q-card-section>
         </q-card>
       </div>
@@ -49,20 +42,53 @@
 </template>
 
 <script>
+import axios from "axios";
+import { useQuasar } from "quasar";
+const $q = useQuasar()
+
 export default {
   data: () => ({
     email: "",
     password: "",
     error: false,
     showPassword: false,
-    remember: false,
+
   }),
   methods: {
-    login() {
-      console.log("Email:", this.email);
-      console.log("Password:", this.password);
-      console.log("Recordar:", this.remember);
+
+    async autenticar() {
+      let response = {};
+      try {
+        response = await axios.post("http://localhost:8181/usuarios/login?username=" + this.email + "&password=" + this.password);
+        if (response.status === 200) {
+          console.log(response.data);
+          console.log(response.status);
+          this.$router.replace("/home");
+          this.$q.notify({
+            color: "green",
+            message: "Bienvenido",
+            position: "top",
+            timeout: 1000,
+          });
+        } else {
+          this.$q.notify({
+            color: "red",
+            message: "Datos ingresados son incorrectos.",
+            position: "top",
+            actions: [{ label: "Cerrar", color: "white" }],
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        this.$q.notify({
+          color: "red",
+          message: "Datos ingresados son incorrectos.",
+          position: "top",
+          actions: [{ label: "Cerrar", color: "white" }],
+        });
+      }
     },
+
   },
   computed: {
     emailRules() {
@@ -81,5 +107,4 @@ export default {
 
 <style lang="scss" scoped>
 @import './LoginForm.scss';
-
 </style>
