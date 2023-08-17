@@ -1,5 +1,7 @@
 import RegisterForm from 'src/components/auth/RegisterForm.vue';
-import About from 'src/components/About.vue';
+import { useAuthStore } from "src/stores/auth";
+import { storeToRefs } from "pinia";
+
 
 const routes = [
 
@@ -20,6 +22,15 @@ const routes = [
   {
     path: '/home',
     name: "home",
+    beforeEnter: (to, from, next) => {
+      const useAuth = useAuthStore();
+      const { logged } = storeToRefs(useAuth);
+      if (logged.value === 1) {
+        next();
+      } else {
+        next("/login");
+      }
+    },
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
@@ -30,7 +41,7 @@ const routes = [
       { path: '/login', component: () => import('components/auth/LoginForm.vue') },
       { path: '/registro', component: RegisterForm },
       { path: '/about', component: () => import('components/About.vue')},
-  
+
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')

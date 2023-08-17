@@ -9,13 +9,12 @@
         </q-toolbar-title>
 
         <q-space />
+        <div>Usuario: {{ this.puesto }}</div>
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
             @click="$q.fullscreen.toggle()" v-if="$q.screen.gt.sm">
           </q-btn>
         </div>
-
-        <div>Usuario: {{ $q.version }}</div>
       </q-toolbar>
     </q-header>
 
@@ -127,6 +126,9 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { useQuasar } from "quasar";
+import { useAuthStore } from "src/stores/auth";
+
+const useAuth = useAuthStore();
 
 export default defineComponent({
   name: 'MainLayout',
@@ -149,6 +151,7 @@ export default defineComponent({
   setup() {
     const leftDrawerOpen = ref(false)
     const $q = useQuasar()
+    const puesto = ref(useAuth.user.nombreCompleto);
 
     const cerrarSesionn = () => {
       // Your logout/logout logic here
@@ -161,6 +164,7 @@ export default defineComponent({
     return {
       $q,
       leftDrawerOpen,
+      puesto,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
