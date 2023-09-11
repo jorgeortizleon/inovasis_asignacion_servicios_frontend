@@ -1,10 +1,13 @@
 <template>
-  <q-page class="window-height window-width row justify-center items-center" style="background: linear-gradient(to bottom right, #0375bc, #ffffff);">
+    <div class="login-background">
+  <q-page class="window-height window-width row justify-center items-center" style="background-image: url('../../assets/bg1.jpg'); background-size: cover;">
     <div class="column q-pa-lg">
       <div class="row">
         <q-card square class="shadow-24 login-card">
           <q-card-section class="login-header">
-            <h4 class="text-h5 text-white q-my-md">INOVASIS</h4>
+            <div class="logo-container">
+              <img src="../../assets/logo_inovasis.png" alt="INOVASIS Logo" class="logo-image" />
+            </div>
           </q-card-section>
           <q-card-section>
             <q-form @submit.prevent="autenticar" class="q-px-sm q-pt-xl" ref="form">
@@ -41,6 +44,7 @@
       </div>
     </div>
   </q-page>
+</div>
 </template>
 
 <script>
@@ -112,20 +116,34 @@ export default {
   width: 400px;
   height: 500px;
   border: 10px;
+  background-color: #ffffff;
 }
 
 .login-header {
-  background-color: #0375bc;
+  background-color: #ffffff;
+  text-align: center;
+
 }
 
 .logo-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%; 
 }
 
 .logo-image {
-  max-width: 100px; /* Ajusta el tamaño máximo de la imagen según tus necesidades */
-  max-height: 100px; /* Ajusta el tamaño máximo de la imagen según tus necesidades */
+  max-width: 40%; /* Ajusta el tamaño máximo de la imagen según tus necesidades */
+  max-height: 0%; /* Ajusta el tamaño máximo de la imagen según tus necesidades */
 }
+
+.login-background {
+  background-image: url('../../assets/bg6.jpg'); /* Ruta absoluta desde la raíz del proyecto */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 100%; /* Ajusta la altura según tus necesidades */
+  overflow: hidden; /* Para evitar desbordamiento del fondo */
+}
+
 </style>

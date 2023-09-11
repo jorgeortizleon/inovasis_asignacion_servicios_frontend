@@ -24,7 +24,7 @@
           Menu
         </q-item-label>
 
-        <q-item to="/" active-class="q-item-no-link-highlighting" :disable="disableMenuUsuarios()">
+        <q-item to="/users" active-class="q-item-no-link-highlighting" :disable="disableMenuUsuarios()">
           <q-item-section avatar>
             <q-icon name="groups" />
           </q-item-section>

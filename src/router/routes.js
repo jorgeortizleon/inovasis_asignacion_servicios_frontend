@@ -36,6 +36,7 @@ const routes = [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: 'registro', component: () => import('components/auth/RegisterForm.vue'), },
       { path: '/about', component: () => import('components/About.vue')},
+      { path: '/users', component: () => import('components/UsersPage.vue')},
     ]
   },
       { path: '/login', component: () => import('components/auth/LoginForm.vue') },
@@ -45,7 +46,12 @@ const routes = [
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')
-  }
+  },
+  {
+    path: '/editar-usuario/:id',
+    name: 'user-edit',
+    component: () => import('components/UserEditForm.vue'),
+  },
 ]
 
 export default routes

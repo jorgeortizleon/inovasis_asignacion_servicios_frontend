@@ -1,23 +1,21 @@
 <template>
   
   <div class="about-container">
-    <div class="about-title">
-      <h5 class="text-center">Acerca de</h5>
-    </div>
-    <div class="col-12 col-md-4 col-sm-6 my-card-wrapper">
-        <q-card @mouseover="hoverOver(-1)" @mouseout="hoverOutTimeout(-1)" class="my-card text-center box-shadow logo-card" flat bordered>
-          <q-card-section>
-            <q-img src="../assets/logo_inovasis.png" class="logo-image" />
-          </q-card-section>
-        </q-card>
+    
+    <div class="col-12 col-md-4 col-sm-6">
+      <q-card class="my-card text-center box-shadow logo-card" flat>
+        <q-card-section>
+          <q-img src="../assets/logo_inovasis.png" class="logo-image" />
+        </q-card-section>
+      </q-card>
       </div>
     <div class="about-content">
       <p class="text-center text-black text-h6">
-        Esta web app busca brindar una experiencia excepcional a nuestros usuarios.
-        Con Quasar Framework hemos creado una interfaz web moderna y receptiva,
-        Vue.js potencia componentes interactivos y una experiencia fluida, mientras
-        que Spring Boot asegura un backend eficiente y escalable. Juntas, estas
-        tecnologías forman una plataforma poderosa y confiable.
+        Esta web app ofrece una experiencia excepcional. 
+        Con Quasar Framework logramos una interfaz moderna,
+        Vue.js potencia componentes interactivos y Spring Boot 
+        asegura un backend eficiente. Juntas, estas tecnologías 
+        forman una plataforma poderosa.
       </p>
     </div>
     <div class="row text-center">
@@ -47,7 +45,7 @@ export default {
         {
           category: 'Frontend',
           title: 'Quasar Framework',
-          description: 'Quasar es un framework que te permite construir sitios web responsivos, aplicaciones web progresivas (PWAs) y aplicaciones móviles utilizando Vue.js.',
+          description: 'Quasar es un framework que te permite construir sitios web responsivos, aplicaciones web progresivas utilizando Vue.js.',
           image: require('../assets/about_1.jpg'),
           headingClass: 'about-heading-1', // Define tus clases de título aquí
           headingColor: 'color-1', // Define tus colores de título aquí
@@ -95,10 +93,6 @@ export default {
   
 }
 
-.about-title {
-  margin-bottom: 0 auto;
-}
-
 .my-card {
   width: 100%;
   max-width: 250px;
@@ -114,15 +108,6 @@ export default {
   font-weight: bold;
 }
 
-.q-img {
-  max-width: 100%;
-}
-.hovered-heading {
-  /* Define los estilos cuando el ratón está sobre la tarjeta */
-  font-weight: bold;
-  color: rgb(11, 127, 199); /* Cambia el color a tu preferencia */
-  font-size: 18px;
-}
 .about-content {
   text-align: center; /* Centra el contenido */
   max-width: 800px; /* Limita el ancho del párrafo */
@@ -144,5 +129,7 @@ export default {
   width: 300px; /* Ancho más grande */
   height: 180px; /* Alto más grande */
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border: none; /* Elimina el borde de la tarjeta de logo */
+
 }
 </style>
