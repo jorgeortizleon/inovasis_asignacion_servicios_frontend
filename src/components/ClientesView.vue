@@ -1,0 +1,520 @@
+<template>
+  <div class="color-fondo">
+    <!-- Seccion de las 4 cards de la pasre superior -->
+    <div icon_position="left" class="espacio-borde-cards">
+      <q-card class="bg-transparent no-shadow no-border" bordered>
+        <q-card-section class="q-pa-none">
+          <div class="row q-col-gutter-sm ">
+            <div v-for="(item, index) in items" :key="index" class="col-md-3 col-sm-12 col-xs-12">
+              <q-item :style="`background-color: ${item.color1}`" class="q-pa-none">
+                <q-item-section v-if="icon_position === 'left'" side :style="`background-color: ${item.color2}`"
+                  class=" q-pa-lg q-mr-none text-white">
+                  <q-icon :name="item.icon" color="white" size="24px"></q-icon>
+                </q-item-section>
+                <q-item-section class=" q-pa-md q-ml-none  text-white">
+                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ item.value }}</q-item-label>
+                  <q-item-label>{{ item.title }}</q-item-label>
+                </q-item-section>
+                <q-item-section v-if="icon_position === 'right'" side class="q-mr-md text-white">
+                  <q-icon :name="item.icon" color="white" size="44px"></q-icon>
+                </q-item-section>
+              </q-item>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
+
+    <!-- tabla clientes -->
+    <div class="row q-col-gutter-sm espacio-borde-table">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <q-card class="text-grey-8 no-shadow" bordered>
+          <q-card-section class="q-pa-none">
+            <q-table class="no-shadow" :rows="rows" title="Clientes" :hide-header="mode === 'grid'" :columns="columns"
+              row-key="idCliente" :filter="filter" :rows-per-page-options="[10000]">
+              <template v-slot:top-right="props">
+                <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+                <q-btn flat round dense :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                  @click="props.toggleFullscreen" v-if="mode === 'list'" class="q-px-sm">
+                  <q-tooltip :disable="$q.platform.is.mobile" v-close-popup>{{ props.inFullscreen ? 'Exit Fullscreen' :
+                    'Toggle Fullscreen' }}
+                  </q-tooltip>
+                </q-btn>
+                <q-btn color="primary" label="Crear Cliente" @click="showDialogCreate = true" />
+              </template>
+              <template v-slot:body-cell-actions="props2">
+                <q-td :props="props2" class="q-gutter-sm">
+                  <q-btn icon="edit" color="info" dense size="sm" @click="editarCliente(props2)" />
+                  <q-btn icon="delete" color="negative" dense size="sm" @click="borrarCliente(props2)" />
+                </q-td>
+              </template>
+            </q-table>
+
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- Dialogo de crear clientes -->
+    <q-dialog v-model="showDialogCreate" ref="dialogCreate" persistent>
+      <q-card style="width: 500px;">
+        <q-card-section>
+          <div class="text-h6">Crear cliente</div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+
+          <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+            <div class="q-gutter-md espacio-borde-izquierda-form">
+              <q-input filled v-model="codigo" label="Código" hint="Introduzca el código" lazy-rules
+                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+            </div>
+            <div class="q-gutter-md espacio-borde-izquierda-form">
+              <q-input filled v-model="razonSocial" label="Razón Social" hint="Introduzca la razón social" lazy-rules
+                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+            </div>
+            <div class="q-gutter-md espacio-borde-izquierda-form">
+              <q-input filled v-model="correo" label="Correo" hint="Introduzca el correo" lazy-rules
+                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+            </div>
+
+            <div class="q-gutter-md row items-center">
+              <div class="col">
+                <q-input filled v-model="telefono" label="Teléfono" hint="Introduzca el teléfono" lazy-rules
+                  :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+              </div>
+              <div class="col">
+                <q-select filled v-model="estado" :options="options" label="Estado" emit-value map-options
+                  hint="Introduzca el estado" />
+              </div>
+            </div>
+          </q-form>
+
+        </q-card-section>
+        <q-card-actions>
+          <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
+          <q-space></q-space>
+          <q-btn flat label="Crear" color="green" @click="botonCrearCliente()" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Dialogo de editar clientes -->
+    <q-dialog v-model="showDialogEditar" ref="dialogEditar" persistent>
+      <q-card style="width: 500px;">
+        <q-card-section>
+          <div class="text-h6">Editar cliente</div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+
+          <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+            <div class="q-gutter-md espacio-borde-izquierda-form">
+              <q-input filled v-model="codigo" label="Código" hint="Introduzca el código" lazy-rules
+                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+            </div>
+            <div class="q-gutter-md espacio-borde-izquierda-form">
+              <q-input filled v-model="razonSocial" label="Razón Social" hint="Introduzca la razón social" lazy-rules
+                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+            </div>
+            <div class="q-gutter-md espacio-borde-izquierda-form">
+              <q-input filled v-model="correo" label="Correo" hint="Introduzca el correo" lazy-rules
+                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+            </div>
+
+            <div class="q-gutter-md row items-center">
+              <div class="col">
+                <q-input filled v-model="telefono" label="Teléfono" hint="Introduzca el teléfono" lazy-rules
+                  :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+              </div>
+              <div class="col">
+                <q-select filled v-model="estado" :options="options" label="Estado" emit-value map-options
+                  hint="Introduzca el estado" />
+              </div>
+            </div>
+          </q-form>
+
+        </q-card-section>
+        <q-card-actions>
+          <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
+          <q-space></q-space>
+          <q-btn flat label="Editar" color="green" @click="botonEditarCliente()" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+  </div>
+</template>
+
+<script>
+import { exportFile, useQuasar } from 'quasar'
+import { ref } from 'vue'
+import axios from "axios";
+
+function wrapCsvValue(val, formatFn) {
+  let formatted = formatFn !== void 0
+    ? formatFn(val)
+    : val
+
+  formatted = formatted === void 0 || formatted === null
+    ? ''
+    : String(formatted)
+
+  formatted = formatted.split('"').join('""')
+  /**
+   * Excel accepts \n and \r in strings, but some other CSV parsers do not
+   * Uncomment the next two lines to escape new lines
+   */
+  // .split('\n').join('\\n')
+  // .split('\r').join('\\r')
+
+  return `"${formatted}"`
+}
+
+//id,codigo, razon, correo, telefono, estad
+
+const columns = [
+  { name: 'idCliente', align: 'left', label: 'ID', field: 'idCliente', sortable: true },
+  { name: 'codigo', align: 'left', label: 'Codigo', field: 'codigo', sortable: true },
+  {
+    name: 'desc',
+    required: true,
+    label: 'Razon social',
+    align: 'left',
+    field: 'razonSocial',
+    sortable: true
+  },
+  {
+    name: 'date',
+    align: 'left',
+    label: 'Correo',
+    field: 'correo',
+    sortable: true
+  },
+  {
+    name: 'desc',
+    required: true,
+    label: 'Telefono',
+    align: 'left',
+    field: 'telefono',
+    sortable: true
+  },
+  {
+    name: 'date',
+    align: 'left',
+    label: 'Estado',
+    field: 'estado',
+    sortable: true,
+    format: (val) => (val === 1 ? 'Activo' : 'No Activo'),
+  },
+  {
+    name: 'actions',
+    field: 'actions',
+    label: 'Editar/Borrar',
+    lign: 'center',
+  },
+];
+
+const rows = [];
+const $q = useQuasar()
+const filter = ref('')
+
+export default {
+  name: 'ClientesPage',
+  data() {
+    return {
+      numClientes: ref(''),
+      numClientesActivos: ref(''),
+      numClientesBorrados: ref(''),
+      ultimoCliente: ref(''),
+      indexEditar: ref(null),
+      idEditar: ref(null),
+      filter,
+      mode: 'list',
+      columns,
+      codigo: ref(''),
+      razonSocial: ref(''),
+      correo: ref(''),
+      telefono: ref(''),
+      estado: ref('1'),
+      rows: [],
+      showDialogCreate: ref(false),
+      showDialogEditar: ref(false),
+      pagination: {
+        rowsPerPage: 10
+      },
+      options: [
+        {
+          label: 'Activo',
+          value: '1'
+        },
+        {
+          label: 'No Activo',
+          value: '0'
+        },
+      ],
+
+      exportTable() {
+        // naive encoding to csv format
+        const content = [columns.map(col => wrapCsvValue(col.label))].concat(
+          rows.map(row => columns.map(col => wrapCsvValue(
+            typeof col.field === 'function'
+              ? col.field(row)
+              : row[col.field === void 0 ? col.name : col.field],
+            col.format
+          )).join(','))
+        ).join('\r\n')
+
+        const status = exportFile(
+          'table-export.csv',
+          content,
+          'text/csv'
+        )
+
+        if (status !== true) {
+          $q.notify({
+            message: 'Browser denied file download...',
+            color: 'negative',
+            icon: 'warning'
+          })
+        }
+      }
+
+    };
+  },
+
+  created() {
+    axios.get("http://localhost:8181/clientes").then((resultado) => {
+      this.rows = resultado.data;
+    });
+
+    axios.get("http://localhost:8181/clientes/numTotalClientes").then((resultado) => {
+      this.numClientes = resultado.data
+    });
+
+    axios.get("http://localhost:8181/clientes/clientesActivos").then((resultado) => {
+      this.numClientesActivos = resultado.data
+    });
+
+    axios.get("http://localhost:8181/clientes/clientesBorrados").then((resultado) => {
+      this.numClientesBorrados = resultado.data
+    });
+
+    axios.get("http://localhost:8181/clientes/razonsocialClienteReciente").then((resultado) => {
+      this.ultimoCliente = resultado.data
+    });
+  },
+
+  props: {
+    icon_position: {
+      required: false,
+      default: "left"
+    }
+  },
+
+  computed: {
+    items: function () {
+      return this.icon_position === "left"
+        ? [
+          {
+            title: "Clientes",
+            icon: "person",
+            value: this.numClientes,
+            color1: "#5064b5",
+            color2: "#3e51b5"
+          },
+          {
+            title: "Activos",
+            icon: "check_circle",
+            value: this.numClientesActivos,
+            color1: "#6d8ed9",
+            color2: "#4e76d1"
+          },
+          {
+            title: "Borrados",
+            icon: "no_accounts",
+            value: this.numClientesBorrados,
+            color1: "#9fb7ff",
+            color2: "#82a1ff"
+          },
+          {
+            title: "Ultimo agregado",
+            icon: "error",
+            value: this.ultimoCliente,
+            color1: "#a0c8ff",
+            color2: "#8bbcff"
+          }
+        ]
+        : [
+          {
+            title: "Monthly Income",
+            icon: "fas fa-dollar-sign",
+            value: "$ 20k",
+            color1: "#546bfa",
+            color2: "#3e51b5"
+          },
+          {
+            title: "Weekly Sales",
+            icon: "fas fa-chart-bar",
+            value: "20",
+            color1: "#3a9688",
+            color2: "#3e51b5"
+          },
+          {
+            title: "New Customers",
+            icon: "fas fa-chart-line",
+            value: "321",
+            color1: "#7cb342",
+            color2: "#3e51b5"
+          },
+          {
+            title: "Active Users",
+            icon: "person",
+            value: "82",
+            color1: "#f88c2b",
+            color2: "#3e51b5"
+          }
+        ];
+    },
+
+
+  },
+
+  methods: {
+    botonCrearCliente() {
+      const clientedto = {
+        codigo: this.codigo,
+        razonSocial: this.razonSocial,
+        correo: this.correo,
+        telefono: this.telefono,
+        estado: this.estado || 0,
+      };
+      this.rows.push(clientedto)
+      this.ultimoCliente = this.razonSocial
+      this.numClientes++
+      axios.post('http://localhost:8181/clientes', clientedto)
+        .then(response => {
+          console.log('Cliente creado con éxito:');
+          // console.log(response);
+          this.$refs.dialogCreate.hide();
+          this.codigo = "";
+          this.razonSocial = "";
+          this.correo = "";
+          this.telefono = "";
+          this.estado = "1";
+        })
+        .catch(error => {
+          console.error('Error al crear el cliente:', error);
+        });
+    },
+
+    borrarCliente(props2) {
+      // console.log("Id del row "+props2.key)
+      // console.log("index del objeto "+props2.pageIndex)
+      axios.get(`http://localhost:8181/clientes/borrar/${props2.key}`)
+        .then(response => {
+          console.log('Cliente eliminado con éxito:', response);
+          this.rows.splice(props2.pageIndex, 1);
+        })
+        .catch(error => {
+          console.error('Error al eliminar el cliente:', error);
+        });
+        this.numClientesBorrados++
+        this.numClientes--
+    },
+
+    editarCliente(props2) {
+      // console.log("Id del row "+props2.key)
+      // console.log("index del objeto "+props2.pageIndex)
+      this.editProps = props2,
+        this.indexEditar = props2.pageIndex,
+        this.idEditar = props2.key,
+        this.codigo = props2.row.codigo,
+        this.razonSocial = props2.row.razonSocial,
+        this.correo = props2.row.correo,
+        this.telefono = props2.row.telefono,
+        this.estado = props2.row.estado === 1 ? '1' : '0',
+        this.showDialogEditar = true
+    },
+
+    botonEditarCliente() {
+  if (this.indexEditar >= 0 && this.indexEditar < this.rows.length) {
+    // Almacena el estado actual en una variable temporal
+    const estadoTemporal = this.rows[this.indexEditar].estado;
+
+    // Actualiza los valores en la fila específica
+    this.rows[this.indexEditar].codigo = this.codigo;
+    this.rows[this.indexEditar].razonSocial = this.razonSocial;
+    this.rows[this.indexEditar].correo = this.correo;
+    this.rows[this.indexEditar].telefono = this.telefono;
+    this.rows[this.indexEditar].estado = this.estado === '1' ? 1 : 0; // Convierte a número
+
+    const clientedto = {
+      codigo: this.codigo,
+      razonSocial: this.razonSocial,
+      correo: this.correo,
+      telefono: this.telefono,
+      estado: this.rows[this.indexEditar].estado, // Utiliza el estado actual de la fila
+    };
+
+    // Luego, realiza la solicitud de actualización
+    axios.put(`http://localhost:8181/clientes/${this.idEditar}`, clientedto)
+      .then(response => {
+        console.log('Cliente editado con éxito:');
+        console.log(response);
+        this.$refs.dialogCreate.hide();
+        this.codigo = "";
+        this.razonSocial = "";
+        this.correo = "";
+        this.telefono = "";
+        this.estado = "1";
+      })
+      .catch(error => {
+        console.error('Error al editar el cliente:', error);
+        // Si hay un error, restaura el estado original
+        this.rows[this.indexEditar].estado = estadoTemporal;
+      });
+  } else {
+    console.error('Índice fuera de rango');
+  }
+  this.botonCloseDialogs();
+},
+
+    botonCloseDialogs() {
+      this.showDialogCreate = false
+      this.showDialogEditar = false
+      this.codigo = "";
+      this.razonSocial = "";
+      this.correo = "";
+      this.telefono = "";
+      this.estado = "1";
+    },
+
+
+  },
+
+};
+</script>
+
+<style>
+.espacio-borde-cards {
+  padding: 10px;
+}
+
+.espacio-borde-table {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+
+.espacio-borde-izquierda-form {
+  padding-right: 10px;
+}
+
+.color-fondo {
+  background-color: #EEEEEE;
+  /* Cambia esto al color que desees */
+}
+</style>

@@ -63,7 +63,7 @@
           </q-list>
         </q-expansion-item>
 
-        <q-item to="/Mail" active-class="q-item-no-link-highlighting" :disable="disableMenuClientes()">
+        <q-item to="/clientes" active-class="q-item-no-link-highlighting" :disable="disableMenuClientes()">
           <q-item-section avatar>
             <q-icon name="groups_2" />
           </q-item-section>

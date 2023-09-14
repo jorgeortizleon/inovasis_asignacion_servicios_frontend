@@ -37,6 +37,7 @@ const routes = [
       { path: 'registro', component: () => import('components/auth/RegisterForm.vue'), },
       { path: '/about', component: () => import('components/About.vue')},
       { path: '/users', component: () => import('components/UsersPage.vue')},
+      { path: '/clientes', component: () => import('components/ClientesView.vue')},
     ]
   },
       { path: '/login', component: () => import('components/auth/LoginForm.vue') },
