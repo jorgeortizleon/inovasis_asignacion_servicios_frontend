@@ -1,0 +1,285 @@
+<template>
+  <div class="color-fondo">
+    <!-- Seccion de las 4 cards de la parte superior -->
+    <div icon_position="left" class="espacio-borde-cards">
+      <q-card class="bg-transparent no-shadow no-border" bordered>
+        <q-card-section class="q-pa-none">
+          <div class="row q-col-gutter-sm ">
+            <div v-for="(item, index) in items" :key="index" class="col-md-3 col-sm-12 col-xs-12">
+              <q-item :style="`background-color: ${item.color1}`" class="q-pa-none">
+                <q-item-section v-if="icon_position === 'left'" side :style="`background-color: ${item.color2}`"
+                  class=" q-pa-lg q-mr-none text-white">
+                  <q-icon :name="item.icon" color="white" size="24px"></q-icon>
+                </q-item-section>
+                <q-item-section class=" q-pa-md q-ml-none  text-white">
+                  <q-item-label class="text-white text-h6 text-weight-bolder">{{ item.value }}</q-item-label>
+                  <q-item-label>{{ item.title }}</q-item-label>
+                </q-item-section>
+                <q-item-section v-if="icon_position === 'right'" side class="q-mr-md text-white">
+                  <q-icon :name="item.icon" color="white" size="44px"></q-icon>
+                </q-item-section>
+              </q-item>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
+    <!-- Tabla de usuarios -->
+    <div class="row q-col-gutter-sm espacio-borde-table">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <q-card class="text-grey-8 no-shadow" bordered>
+          <q-card-section class="q-pa-none">
+            <q-table class="no-shadow" :rows="filteredUsers" title="Usuarios" :hide-header="mode === 'grid'" :columns="columns"
+              row-key="idUsuario" :filter="filter" :rows-per-page-options="[10000]">
+              <template v-slot:top-right="props">
+                <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+                <q-btn flat round dense :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                  @click="toggleFullscreen" v-if="mode === 'list'" class="q-px-sm">
+                  <q-tooltip :disable="$q.platform.is.mobile" v-close-popup>{{ props.inFullscreen ? 'Exit Fullscreen' :
+                    'Toggle Fullscreen' }}
+                  </q-tooltip>
+                </q-btn>
+                <q-btn color="primary" label="Crear Usuario" @click="showDialogCreate = true" />
+              </template>
+              <template v-slot:body-cell-actions="props2">
+                <q-td :props="props2" class="q-gutter-sm">
+                  <q-btn icon="edit" color="info" dense size="sm" @click="editarUsuario(props2)" />
+                  <q-btn icon="delete" color="negative" dense size="sm" @click="borrarUsuario(props2)" />
+                </q-td>
+              </template>
+              <!-- Columna para los íconos -->
+              <q-tr :props="props2">
+                <q-td :props="props2" class="q-gutter-sm">
+                  <q-icon :name="props2.row.icon" color="primary" dense size="24px" />
+                </q-td>
+              </q-tr>
+            </q-table>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
+import UserForm from 'components/users/UserForm.vue'; 
+
+const columns = [
+  { name: 'userName', align: 'left', label: 'Usuario', field: 'userName', sortable: true },
+  { name: 'nombreCompleto', align: 'left', label: 'Nombre Completo', field: 'nombreCompleto', sortable: true },
+  { name: 'correo', align: 'left', label: 'Correo Electrónico', field: 'correo', sortable: true },
+  { name: 'nombreRol', align: 'left', label: 'Rol', field: 'nombreRol', sortable: true },
+  { name: 'estado', align: 'left', label: 'Estado', field: 'estado', sortable: true },
+  { name: 'edit', align: 'center', label: 'Editar', field: 'idUsuario', sortable: false },
+  { name: 'icon', label: 'Icono', field: 'icon', sortable: false },
+];
+
+export default {
+  components: {
+    //UserForm
+  },
+  computed: {
+    items: function () {
+      return this.icon_position === 'left'
+        ? [
+            {
+              title: 'Usuarios',
+              icon: 'person',
+              value: this.numUsuarios,
+              color1: '#5064b5',
+              color2: '#3e51b5',
+            },
+            {
+              title: 'Usuarios Activos',
+              icon: 'check_circle',
+              value: this.numUsuariosActivos,
+              color1: '#6d8ed9',
+              color2: '#4e76d1',
+            },
+            {
+              title: 'Usuarios Eliminados',
+              icon: 'delete_sweep',
+              value: this.numUsuariosEliminados,
+              color1: '#9fb7ff',
+              color2: '#82a1ff',
+            },
+            {
+              title: 'Último Usuario',
+              icon: 'person_add',
+              value: this.ultimoUsuario,
+              color1: '#a0c8ff',
+              color2: '#8bbcff',
+            },
+          ]
+        : [
+            {
+              title: 'Usuarios',
+              icon: 'person',
+              value: this.numUsuarios,
+              color1: '#5064b5',
+              color2: '#3e51b5',
+            },
+            {
+              title: 'Usuarios Activos',
+              icon: 'check_circle',
+              value: this.numUsuariosActivos,
+              color1: '#6d8ed9',
+              color2: '#4e76d1',
+            },
+            {
+              title: 'Usuarios Eliminados',
+              icon: 'delete_sweep',
+              value: this.numUsuariosEliminados,
+              color1: '#9fb7ff',
+              color2: '#82a1ff',
+            },
+            {
+              title: 'Último Usuario',
+              icon: 'person_add',
+              value: this.ultimoUsuario,
+              color1: '#a0c8ff',
+              color2: '#8bbcff',
+            },
+          ];
+    },
+  },
+  
+  setup() {
+    const defaultSeparator = 'vertical';
+    const users = ref([]);
+    const filter = ref('');
+    const isFullscreen = ref(false);
+    const fullscreenIcon = computed(() => (isFullscreen.value ? 'fullscreen_exit' : 'fullscreen'));
+    const dialogVisible = ref(false);
+    const editedUser = ref(null); 
+
+    // Función para abrir el diálogo de edición con los datos del usuario
+    const openEditDialog = (user) => {
+      editedUser.value = { ...user }; // Clona el usuario para no afectar los datos originales
+      dialogVisible.value = true; // Abre el diálogo de edición
+    };
+    
+    const openDialog = () => {
+      dialogVisible.value = true;
+    };
+
+    const saveUser = () => {
+      dialogVisible.value = false;
+    };
+
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:8181/usuarios');
+        users.value = response.data;
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    onMounted(() => {
+      fetchUsers();
+    });
+
+    const filteredUsers = computed(() => {
+      return users.value.filter(user =>
+        user.nombreCompleto.toLowerCase().includes(filter.value.toLowerCase())
+      );
+    });
+
+    const toggleFullscreen = () => {
+      isFullscreen.value = !isFullscreen.value;
+    };
+
+    // Estado para mostrar/ocultar el diálogo
+    const showDialog = ref(false);
+
+    // Estado para los datos del nuevo usuario
+    const newUser = ref({
+      userName: '',
+      nombreCompleto: '',
+      correo: '',
+      nombreRol: '',
+      estado: 1,
+    });
+
+    // Función para abrir el diálogo
+    const showCreateUserDialog = () => {
+      showDialog.value = true;
+    };
+
+    // Función para cerrar el diálogo
+    const closeCreateUserDialog = () => {
+      showDialog.value = false;
+      // Limpia los datos del nuevo usuario al cerrar el diálogo
+      newUser.value = {
+        userName: '',
+        nombreCompleto: '',
+        correo: '',
+        nombreRol: '',
+        estado: 1,
+      };
+    };
+      // Función para actualizar la lista de usuarios
+      const updateUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:8181/usuarios');
+        users.value = response.data;
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    // Escuchar el evento 'usuario-creado' emitido desde el componente UserForm
+    const handleUsuarioCreado = () => {
+      fetchUsers(); // Actualizar la tabla
+    };
+
+    return {
+      columns,
+      defaultSeparator,
+      filter,
+      filteredUsers,
+      isFullscreen,
+      fullscreenIcon,
+      toggleFullscreen,
+      showDialog,
+      newUser,
+      showCreateUserDialog,
+      closeCreateUserDialog,
+      dialogVisible, // Para controlar la visibilidad del diálogo
+      openDialog,
+      saveUser,
+      handleUsuarioCreado,
+      openEditDialog,
+      updateUsers,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.espacio-borde-cards {
+  padding: 10px;
+}
+
+.espacio-borde-table {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+
+.espacio-borde-izquierda-form {
+  padding-right: 10px;
+}
+
+.color-fondo {
+  background-color: #EEEEEE;
+  /* Cambia esto al color que desees */
+}
+</style>

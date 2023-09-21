@@ -1,8 +1,7 @@
 <template>
   <q-page>
     <div class="q-pa-md q-gutter-md">
-      <q-form
-  @submit.prevent="crearUsuario" class="custom-form">
+      <q-form @submit.prevent="crearUsuario" class="custom-form">
     <q-input 
     square 
     clearable 
@@ -95,11 +94,11 @@
 
 
 <script>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 
 export default {
-  props: ['dialogVisible'],
+  props: ['dialogVisible', 'updateUsers', 'isEditing', 'editedUser'],
   setup(props, context) {
     
     const usuario = ref('');
@@ -163,7 +162,8 @@ export default {
       requestData,
     );
     console.log('Usuario creado:', response.data);
-    context.emit('usuario-creado');
+        // Llama a la función updateUsers para actualizar la lista de usuarios en UsersPage.vue
+    props.updateUsers();
     context.emit('close-dialog');
   } catch (error) {
     console.error('Error al crear usuario:', error);

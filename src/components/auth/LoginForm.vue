@@ -110,7 +110,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import './LoginForm.scss';
 
 .login-card {
   width: 400px;
