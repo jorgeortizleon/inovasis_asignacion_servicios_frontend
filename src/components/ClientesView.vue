@@ -1,5 +1,6 @@
 <template>
-  <div class="color-fondo">
+  <q-page class="color-fondo">
+
     <!-- Seccion de las 4 cards de la pasre superior -->
     <div icon_position="left" class="espacio-borde-cards">
       <q-card class="bg-transparent no-shadow no-border" bordered>
@@ -31,7 +32,8 @@
         <q-card class="text-grey-8 no-shadow" bordered>
           <q-card-section class="q-pa-none">
             <q-table class="no-shadow" :rows="rows" title="Clientes" :hide-header="mode === 'grid'" :columns="columns"
-              row-key="idCliente" :filter="filter" :rows-per-page-options="[10000]">
+              row-key="idCliente" :filter="filter" :rows-per-page-options="[10000]" no-data-label="No hay clientes"
+              no-results-label="No se encuentra un cliente que coincida">
               <template v-slot:top-right="props">
                 <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
                   <template v-slot:append>
@@ -53,7 +55,6 @@
                 </q-td>
               </template>
             </q-table>
-
           </q-card-section>
         </q-card>
       </div>
@@ -66,38 +67,55 @@
           <div class="text-h6">Crear cliente</div>
         </q-card-section>
         <q-card-section class="q-pt-none">
-
           <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
             <div class="q-gutter-md espacio-borde-izquierda-form">
               <q-input filled v-model="codigo" label="Código" hint="Introduzca el código" lazy-rules
-                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+                :rules="[val => val && val.length > 0 || 'Este campo no puede estar vacío.']">
+                <template v-slot:prepend>
+                  <q-icon name="text_snippet" />
+                </template>
+              </q-input>
             </div>
             <div class="q-gutter-md espacio-borde-izquierda-form">
               <q-input filled v-model="razonSocial" label="Razón Social" hint="Introduzca la razón social" lazy-rules
-                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+                :rules="[noVacio, soloMayusculasSinAcentos]">
+                <template v-slot:prepend>
+                  <q-icon name="business" />
+                </template>
+              </q-input>
             </div>
             <div class="q-gutter-md espacio-borde-izquierda-form">
               <q-input filled v-model="correo" label="Correo" hint="Introduzca el correo" lazy-rules
-                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+                :rules="[noVacio, formatoCorreoValido]">
+                <template v-slot:prepend>
+                  <q-icon name="mail" />
+                </template>
+              </q-input>
             </div>
-
             <div class="q-gutter-md row items-center">
               <div class="col">
                 <q-input filled v-model="telefono" label="Teléfono" hint="Introduzca el teléfono" lazy-rules
-                  :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+                  :rules="[noVacio, formatoNumeroValido]">
+                  <template v-slot:prepend>
+                    <q-icon name="call" />
+                  </template>
+                </q-input>
               </div>
               <div class="col">
                 <q-select filled v-model="estado" :options="options" label="Estado" emit-value map-options
-                  hint="Introduzca el estado" />
+                  hint="Introduzca el estado">
+                  <template v-slot:prepend>
+                    <q-icon name="checklist_rtl" />
+                  </template>
+                </q-select>
               </div>
             </div>
           </q-form>
-
         </q-card-section>
         <q-card-actions>
           <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
           <q-space></q-space>
-          <q-btn flat label="Crear" color="green" @click="botonCrearCliente()" />
+          <q-btn flat label="Crear" icon-right="add_circle" color="green" @click="botonCrearCliente()" :disable="disableBtn()" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -109,43 +127,77 @@
           <div class="text-h6">Editar cliente</div>
         </q-card-section>
         <q-card-section class="q-pt-none">
-
           <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
             <div class="q-gutter-md espacio-borde-izquierda-form">
               <q-input filled v-model="codigo" label="Código" hint="Introduzca el código" lazy-rules
-                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']">
+                <template v-slot:prepend>
+                  <q-icon name="text_snippet" />
+                </template>
+              </q-input>
             </div>
             <div class="q-gutter-md espacio-borde-izquierda-form">
               <q-input filled v-model="razonSocial" label="Razón Social" hint="Introduzca la razón social" lazy-rules
-                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+                :rules="[noVacio, soloMayusculasSinAcentos]">
+                <template v-slot:prepend>
+                  <q-icon name="business" />
+                </template>
+              </q-input>
             </div>
             <div class="q-gutter-md espacio-borde-izquierda-form">
               <q-input filled v-model="correo" label="Correo" hint="Introduzca el correo" lazy-rules
-                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+                :rules="[noVacio, formatoCorreoValido]">
+                <template v-slot:prepend>
+                  <q-icon name="mail" />
+                </template>
+              </q-input>
             </div>
-
             <div class="q-gutter-md row items-center">
               <div class="col">
                 <q-input filled v-model="telefono" label="Teléfono" hint="Introduzca el teléfono" lazy-rules
-                  :rules="[val => val && val.length > 0 || 'Por favor escriba algo']" />
+                  :rules="[noVacio, formatoNumeroValido]">
+                  <template v-slot:prepend>
+                  <q-icon name="call" />
+                </template>
+              </q-input>
               </div>
               <div class="col">
                 <q-select filled v-model="estado" :options="options" label="Estado" emit-value map-options
-                  hint="Introduzca el estado" />
+                  hint="Introduzca el estado">
+                  <template v-slot:prepend>
+                  <q-icon name="checklist_rtl" />
+                </template>
+              </q-select>
               </div>
             </div>
           </q-form>
-
         </q-card-section>
         <q-card-actions>
           <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
           <q-space></q-space>
-          <q-btn flat label="Editar" color="green" @click="botonEditarCliente()" />
+          <q-btn flat label="Editar" icon-right="edit" color="green" @click="botonEditarCliente()" />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-  </div>
+    <!-- Dialogo de borrar clientes -->
+    <q-dialog v-model="showDialogBorrar" ref="dialogEditar" persistent>
+      <q-card style="width: 500px;">
+        <q-card-section>
+          <div class="text-h6">Eliminar cliente</div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          ¿Seguro que desea eliminar el cliente seleccionado?
+        </q-card-section>
+        <q-card-actions>
+          <q-btn flat label="Cancelar" color="red" @click="botonCloseDialogs()" />
+          <q-space></q-space>
+          <q-btn flat label="Eliminar" icon-right="delete" color="primary" @click="botonBorrarCliente()" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+  </q-page>
 </template>
 
 <script>
@@ -225,12 +277,15 @@ export default {
   name: 'ClientesPage',
   data() {
     return {
+      allRules: ref(false),
       numClientes: ref(''),
       numClientesActivos: ref(''),
       numClientesBorrados: ref(''),
       ultimoCliente: ref(''),
       indexEditar: ref(null),
       idEditar: ref(null),
+      indexBorrar: ref(null),
+      idBorrar: ref(null),
       filter,
       mode: 'list',
       columns,
@@ -239,9 +294,10 @@ export default {
       correo: ref(''),
       telefono: ref(''),
       estado: ref('1'),
-      rows: [],
+      rows: ref([]),
       showDialogCreate: ref(false),
       showDialogEditar: ref(false),
+      showDialogBorrar: ref(false),
       pagination: {
         rowsPerPage: 10
       },
@@ -391,12 +447,12 @@ export default {
         telefono: this.telefono,
         estado: this.estado || 0,
       };
-      this.rows.push(clientedto)
+      // this.rows.push(clientedto)
       this.ultimoCliente = this.razonSocial
       this.numClientes++
       axios.post('http://localhost:8181/clientes', clientedto)
         .then(response => {
-          console.log('Cliente creado con éxito:');
+          console.log('Cliente creado con éxito: ' + response.status);
           // console.log(response);
           this.$refs.dialogCreate.hide();
           this.codigo = "";
@@ -404,25 +460,34 @@ export default {
           this.correo = "";
           this.telefono = "";
           this.estado = "1";
+          axios.get("http://localhost:8181/clientes").then((resultado) => {
+            this.rows = resultado.data;
+          });
+          this.$q.notify({
+            type: 'positive',
+            message: "Cliente creado con exito",
+            progress: true,
+            timeout: 1000,
+          });
         })
         .catch(error => {
           console.error('Error al crear el cliente:', error);
+          this.$q.notify({
+            type: 'negative',
+            message: "Error: " + error.message,
+            progress: true,
+            timeout: 1000,
+          });
         });
+      axios.get("http://localhost:8181/clientes").then((resultado) => {
+        this.rows = resultado.data;
+      });
     },
 
     borrarCliente(props2) {
-      // console.log("Id del row "+props2.key)
-      // console.log("index del objeto "+props2.pageIndex)
-      axios.get(`http://localhost:8181/clientes/borrar/${props2.key}`)
-        .then(response => {
-          console.log('Cliente eliminado con éxito:', response);
-          this.rows.splice(props2.pageIndex, 1);
-        })
-        .catch(error => {
-          console.error('Error al eliminar el cliente:', error);
-        });
-        this.numClientesBorrados++
-        this.numClientes--
+      this.idBorrar = props2.key
+      this.indexBorrar = props2.pageIndex
+      this.showDialogBorrar = true
     },
 
     editarCliente(props2) {
@@ -440,51 +505,89 @@ export default {
     },
 
     botonEditarCliente() {
-  if (this.indexEditar >= 0 && this.indexEditar < this.rows.length) {
-    // Almacena el estado actual en una variable temporal
-    const estadoTemporal = this.rows[this.indexEditar].estado;
+      if (this.indexEditar >= 0 && this.indexEditar < this.rows.length) {
+        const estadoTemporal = this.rows[this.indexEditar].estado;
 
-    // Actualiza los valores en la fila específica
-    this.rows[this.indexEditar].codigo = this.codigo;
-    this.rows[this.indexEditar].razonSocial = this.razonSocial;
-    this.rows[this.indexEditar].correo = this.correo;
-    this.rows[this.indexEditar].telefono = this.telefono;
-    this.rows[this.indexEditar].estado = this.estado === '1' ? 1 : 0; // Convierte a número
+        this.rows[this.indexEditar].codigo = this.codigo;
+        this.rows[this.indexEditar].razonSocial = this.razonSocial;
+        this.rows[this.indexEditar].correo = this.correo;
+        this.rows[this.indexEditar].telefono = this.telefono;
+        this.rows[this.indexEditar].estado = this.estado === '1' ? 1 : 0;
 
-    const clientedto = {
-      codigo: this.codigo,
-      razonSocial: this.razonSocial,
-      correo: this.correo,
-      telefono: this.telefono,
-      estado: this.rows[this.indexEditar].estado, // Utiliza el estado actual de la fila
-    };
+        const clientedto = {
+          codigo: this.codigo,
+          razonSocial: this.razonSocial,
+          correo: this.correo,
+          telefono: this.telefono,
+          estado: this.rows[this.indexEditar].estado,
+        };
 
-    // Luego, realiza la solicitud de actualización
-    axios.put(`http://localhost:8181/clientes/${this.idEditar}`, clientedto)
-      .then(response => {
-        console.log('Cliente editado con éxito:');
-        console.log(response);
-        this.$refs.dialogCreate.hide();
-        this.codigo = "";
-        this.razonSocial = "";
-        this.correo = "";
-        this.telefono = "";
-        this.estado = "1";
-      })
-      .catch(error => {
-        console.error('Error al editar el cliente:', error);
-        // Si hay un error, restaura el estado original
-        this.rows[this.indexEditar].estado = estadoTemporal;
-      });
-  } else {
-    console.error('Índice fuera de rango');
-  }
-  this.botonCloseDialogs();
-},
+        axios.put(`http://localhost:8181/clientes/${this.idEditar}`, clientedto)
+          .then(response => {
+            console.log('Cliente editado con éxito:');
+            this.$q.notify({
+              type: "info",
+              message: "Cliente editado con éxito",
+              progress: true,
+              timeout: 1000,
+            });
+            console.log(response);
+            this.$refs.dialogCreate.hide();
+            this.codigo = "";
+            this.razonSocial = "";
+            this.correo = "";
+            this.telefono = "";
+            this.estado = "1";
+          })
+          .catch(error => {
+            console.error('Error al editar el cliente:', error);
+            this.rows[this.indexEditar].estado = estadoTemporal;
+            this.$q.notify({
+              type: 'negative',
+              progress: true,
+              message: "Error: " + error.message,
+              timeout: 1000,
+            });
+          });
+      } else {
+        console.error('Índice fuera de rango');
+      }
+      this.botonCloseDialogs();
+    },
+
+    botonBorrarCliente() {
+      console.log(this.idBorrar)
+      console.log(this.indexBorrar)
+
+      axios.get(`http://localhost:8181/clientes/borrar/${this.idBorrar}`)
+        .then(response => {
+          console.log('Cliente eliminado con éxito:', response.status);
+          this.rows.splice(this.indexBorrar, 1);
+          this.$q.notify({
+            type: "negative",
+            message: "Cliente eliminado con éxito",
+            progress: true,
+            timeout: 1000,
+          });
+        })
+        .catch(error => {
+          console.error('Error al eliminar el cliente:', error);
+          this.$q.notify({
+            type: 'negative',
+            message: "Error: " + error.message,
+            progress: true,
+            timeout: 1000,
+          });
+        });
+      this.numClientesBorrados++
+      this.numClientes--
+      this.botonCloseDialogs();
+    },
 
     botonCloseDialogs() {
       this.showDialogCreate = false
       this.showDialogEditar = false
+      this.showDialogBorrar = false
       this.codigo = "";
       this.razonSocial = "";
       this.correo = "";
@@ -492,6 +595,40 @@ export default {
       this.estado = "1";
     },
 
+    //Form Rules
+
+    // Regla para verificar si el campo no está vacío
+    noVacio(value) {
+      return value.trim() !== '' || 'Este campo no puede estar vacío.';
+    },
+
+    // Regla para verificar si solo contiene mayúsculas sin acentos
+    soloMayusculasSinAcentos(value) {
+      const mayusculas = /^[A-Z\s]*$/;
+      return mayusculas.test(value) || 'Solo se permiten mayúsculas sin acentos.';
+    },
+
+    // Regla para verificar el formato válido de un correo electrónico
+    formatoCorreoValido(value) {
+      const formatoCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return formatoCorreo.test(value) || 'Introduce un correo electrónico válido.';
+    },
+
+    // Regla para verificar el formato válido del número de teléfono o celular
+    formatoNumeroValido(value) {
+      const formatoNumero = /^[0-9\s]+$/;
+      console.log(formatoNumero.test(value))
+      return formatoNumero.test(value) || 'Introduce un número de teléfono o celular válido.';
+    },
+
+    disableBtn() {
+      if (this.razonSocial !== "" && this.codigo !== "" && this.correo !== "" && this.telefono !== "") {
+        return false;
+      } else {
+        return true;
+      }
+
+    }
 
   },
 
@@ -515,6 +652,5 @@ export default {
 
 .color-fondo {
   background-color: #EEEEEE;
-  /* Cambia esto al color que desees */
 }
 </style>

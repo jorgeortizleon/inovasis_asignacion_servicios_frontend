@@ -24,7 +24,7 @@
           Menu
         </q-item-label>
 
-        <q-item to="/users" active-class="q-item-no-link-highlighting" :disable="disableMenuUsuarios()">
+        <q-item to="/users" active-class="q-item-no-link-highlighting my-menu-link" v-ripple :disable="this.permisoUsuarios">
           <q-item-section avatar>
             <q-icon name="groups" />
           </q-item-section>
@@ -34,7 +34,7 @@
           </q-item-section>
         </q-item>
 
-        <q-expansion-item icon="home_repair_service" label="Servicios" :disable="disableMenuServicios()">
+        <q-expansion-item icon="home_repair_service" label="Servicios" :disable="this.permisoServicios">
           <q-list class="q-pl-lg">
             <q-item to="/Map" active-class="q-item-no-link-highlighting">
               <q-item-section avatar>
@@ -63,7 +63,7 @@
           </q-list>
         </q-expansion-item>
 
-        <q-item to="/clientes" active-class="q-item-no-link-highlighting" :disable="disableMenuClientes()">
+        <q-item to="/clientes" active-class="q-item-no-link-highlighting my-menu-link" v-ripple :disable="this.permisoClientes">
           <q-item-section avatar>
             <q-icon name="groups_2" />
           </q-item-section>
@@ -73,7 +73,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/directory" active-class="q-item-no-link-highlighting" :disable="disableMenuReportes()">
+        <q-item to="/directory" active-class="q-item-no-link-highlighting my-menu-link" v-ripple :disable="this.permisoReportes">
           <q-item-section avatar>
             <q-icon name="analytics" />
           </q-item-section>
@@ -83,7 +83,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/directory" active-class="q-item-no-link-highlighting" :disable="disableMenuConfiguracion()">
+        <q-item to="/directory" active-class="q-item-no-link-highlighting my-menu-link" v-ripple :disable="this.permisoConfig">
           <q-item-section avatar>
             <q-icon name="settings" />
           </q-item-section>
@@ -93,27 +93,29 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/about" active-class="q-item-no-link-highlighting" :disable="disableMenuAcerca()">
-  <q-item-section avatar>
-    <q-icon name="info" />
-  </q-item-section>
-  <q-item-section>
-    <q-item-label>Acerca de</q-item-label>
-    <q-item-label caption>Caption</q-item-label>
-  </q-item-section>
-</q-item>
+        <q-item to="/about" active-class="q-item-no-link-highlighting my-menu-link" v-ripple
+          :disable="this.permisoAcercade">
+          <q-item-section avatar>
+            <q-icon name="info" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Acerca de</q-item-label>
+            <q-item-label caption>Caption</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
 
-       <div style="position:absolute; bottom: 20px; margin-left: auto; margin-right: auto; left:0; right:0; text-align:center">
-    <q-item to="/" @click="cerrarSesion" active-class="q-item-no-link-highlighting" class="cursor-pointer">
-      <q-item-section avatar>
-        <q-icon color="red" name="logout" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label style="color: red;">Cerrar Sesión</q-item-label>
-      </q-item-section>
-    </q-item>
-  </div>
+      <div
+        style="position:absolute; bottom: 20px; margin-left: auto; margin-right: auto; left:0; right:0; text-align:center">
+        <q-item to="/" @click="cerrarSesion" active-class="q-item-no-link-highlighting" class="cursor-pointer">
+          <q-item-section avatar>
+            <q-icon color="red" name="logout" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label style="color: red;">Cerrar Sesión</q-item-label>
+          </q-item-section>
+        </q-item>
+      </div>
 
     </q-drawer>
 
@@ -125,8 +127,8 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
-import { useQuasar } from "quasar";
 import { useAuthStore } from "src/stores/auth";
+import axios from "axios";
 
 const useAuth = useAuthStore();
 
@@ -134,6 +136,76 @@ export default defineComponent({
   name: 'MainLayout',
 
   components: {
+
+  },
+  created(){
+
+    axios.get("http://localhost:8181/permisos/menuUsuarios/"+this.idRol).then((resultado) => {
+        if (resultado.data === 1) {
+        this.permisoUsuarios = false
+      } else if (resultado.data === 0) {
+        this.permisoUsuarios = true
+      } else {
+        console.log("Error al obtener los permisos del menu")
+        this.permisoUsuarios = true
+      }
+    });
+
+    axios.get("http://localhost:8181/permisos/menuServicios/"+this.idRol).then((resultado) => {
+        if (resultado.data === 1) {
+        this.permisoServicios = false
+      } else if (resultado.data === 0) {
+        this.permisoServicios = true
+      } else {
+        console.log("Error al obtener los permisos del menu")
+        this.permisoServicios = true
+      }
+    });
+
+    axios.get("http://localhost:8181/permisos/menuClientes/"+this.idRol).then((resultado) => {
+        if (resultado.data === 1) {
+        this.permisoClientes = false
+      } else if (resultado.data === 0) {
+        this.permisoClientes = true
+      } else {
+        console.log("Error al obtener los permisos del menu")
+        this.permisoClientes = true
+      }
+    });
+
+    axios.get("http://localhost:8181/permisos/menuReportes/"+this.idRol).then((resultado) => {
+        if (resultado.data === 1) {
+        this.permisoReportes = false
+      } else if (resultado.data === 0) {
+        this.permisoReportes = true
+      } else {
+        console.log("Error al obtener los permisos del menu")
+        this.permisoReportes = true
+      }
+    });
+
+    axios.get("http://localhost:8181/permisos/menuConfig/"+this.idRol).then((resultado) => {
+        if (resultado.data === 1) {
+        this.permisoConfig = false
+      } else if (resultado.data === 0) {
+        this.permisoConfig = true
+      } else {
+        console.log("Error al obtener los permisos del menu")
+        this.permisoConfig = true
+      }
+    });
+
+    axios.get("http://localhost:8181/permisos/menuAcercade/"+this.idRol).then((resultado) => {
+        if (resultado.data === 1) {
+        this.permisoAcercade = false
+      } else if (resultado.data === 0) {
+        this.permisoAcercade = true
+      } else {
+        console.log("Error al obtener los permisos del menu")
+        this.permisoAcercade = true
+      }
+    });
+
 
   },
 
@@ -147,125 +219,30 @@ export default defineComponent({
       // Add your logout logic here
     },
 
-    disableMenuUsuarios(){
-      if(useAuth.user.idRol === 1){
-          return false
-      } else if (useAuth.user.idRol === 2) {
-        return true
-      } else if (useAuth.user.idRol === 3) {
-        return true
-      } else if (useAuth.user.idRol === 4) {
-        return true
-      } else if (useAuth.user.idRol === 5) {
-        return true
-      } else if (useAuth.user.idRol === 6) {
-        return true
-      } else {
-        console.log("Error")
-      }
-    },
-
-    disableMenuServicios(){
-      if(useAuth.user.idRol === 1){
-          return false
-      } else if (useAuth.user.idRol === 2) {
-        return true
-      } else if (useAuth.user.idRol === 3) {
-        return false
-      } else if (useAuth.user.idRol === 4) {
-        return false
-      } else if (useAuth.user.idRol === 5) {
-        return true
-      } else if (useAuth.user.idRol === 6) {
-        return true
-      } else {
-        console.log("Error")
-      }
-    },
-
-    disableMenuClientes(){
-      if(useAuth.user.idRol === 1){
-          return false
-      } else if (useAuth.user.idRol === 2) {
-        return false
-      } else if (useAuth.user.idRol === 3) {
-        return false
-      } else if (useAuth.user.idRol === 4) {
-        return true
-      } else if (useAuth.user.idRol === 5) {
-        return true
-      } else if (useAuth.user.idRol === 6) {
-        return true
-      } else {
-        console.log("Error")
-      }
-    },
-
-    disableMenuReportes(){
-      if(useAuth.user.idRol === 1){
-          return false
-      } else if (useAuth.user.idRol === 2) {
-        return false
-      } else if (useAuth.user.idRol === 3) {
-        return false
-      } else if (useAuth.user.idRol === 4) {
-        return false
-      } else if (useAuth.user.idRol === 5) {
-        return true
-      } else if (useAuth.user.idRol === 6) {
-        return true
-      } else {
-        console.log("Error")
-      }
-    },
-
-    disableMenuConfiguracion(){
-      if(useAuth.user.idRol === 1){
-          return false
-      } else if (useAuth.user.idRol === 2) {
-        return false
-      } else if (useAuth.user.idRol === 3) {
-        return true
-      } else if (useAuth.user.idRol === 4) {
-        return true
-      } else if (useAuth.user.idRol === 5) {
-        return true
-      } else if (useAuth.user.idRol === 6) {
-        return true
-      } else {
-        console.log("Error")
-      }
-    },
-
-    disableMenuAcerca(){
-      if(useAuth.user.idRol === 1){
-          return false
-      } else if (useAuth.user.idRol === 2) {
-        return false
-      } else if (useAuth.user.idRol === 3) {
-        return false
-      } else if (useAuth.user.idRol === 4) {
-        return false
-      } else if (useAuth.user.idRol === 5) {
-        return false
-      } else if (useAuth.user.idRol === 6) {
-        return false
-      } else {
-        console.log("Error")
-      }
-    },
-
   },
 
   setup() {
     const leftDrawerOpen = ref(false)
-    const $q = useQuasar()
     const puesto = ref(useAuth.user.nombreCompleto);
+    const idRol = ref(useAuth.user.idRol);
+    const permisoUsuarios = ref(true);
+    const permisoServicios = ref(true);
+    const permisoClientes = ref(true);
+    const permisoReportes = ref(true);
+    const permisoConfig = ref(true);
+    const permisoAcercade = ref(true);
 
     return {
-      $q,
+
       leftDrawerOpen,
       puesto,
+      idRol,
+      permisoUsuarios,
+      permisoServicios,
+      permisoClientes,
+      permisoReportes,
+      permisoConfig,
+      permisoAcercade,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
@@ -273,3 +250,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+.my-menu-link {
+  border-left: 4px solid #1976D2;
+  color: #1976D2;
+}
+</style>

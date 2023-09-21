@@ -10,7 +10,6 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
-import { useQuasar } from "quasar";
 
 export default defineComponent({
   name: 'MainLayout',
@@ -21,10 +20,9 @@ export default defineComponent({
 
   setup() {
     const leftDrawerOpen = ref(false)
-    const $q = useQuasar()
 
     return {
-      $q,
+
       leftDrawerOpen,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value

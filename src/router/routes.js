@@ -15,7 +15,7 @@ const routes = [
     name: "login",
     component: () => import('layouts/LoginLayout.vue'),
     children: [
-      { path: '', component: () => import('components/auth/LoginForm.vue') },
+      { path: '', name: "login", component: () => import('components/auth/LoginForm.vue') },
     ]
   },
 
@@ -33,7 +33,7 @@ const routes = [
     },
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: '', name: "home", component: () => import('pages/IndexPage.vue') },
       { path: 'registro', component: () => import('components/auth/RegisterForm.vue'), },
       { path: '/about', component: () => import('components/About.vue')},
       { path: '/users', component: () => import('components/UsersPage.vue')},

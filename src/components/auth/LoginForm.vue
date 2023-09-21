@@ -1,6 +1,6 @@
 <template>
     <div class="login-background">
-  <q-page class="window-height window-width row justify-center items-center" style="background-image: url('../../assets/bg1.jpg'); background-size: cover;">
+  <q-page class="window-height window-width row justify-center items-center" >
     <div class="column q-pa-lg">
       <div class="row">
         <q-card square class="shadow-24 login-card">
@@ -71,7 +71,7 @@ export default {
           const { user, logged } = storeToRefs(useAuth);
           user.value = response.data;
           logged.value = 1;
-          console.log(response.data)
+          // console.log(response.data)
           this.$router.replace("/home");
           this.$q.notify({
             color: "green",
@@ -129,7 +129,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%; 
+  height: 100%;
 }
 
 .logo-image {
