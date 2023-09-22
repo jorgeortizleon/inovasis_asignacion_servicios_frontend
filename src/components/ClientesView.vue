@@ -374,34 +374,34 @@ export default {
     items: function () {
       return this.icon_position === "left"
         ? [
-          {
+        {
             title: "Clientes",
             icon: "person",
             value: this.numClientes,
-            color1: "#5064b5",
-            color2: "#3e51b5"
+            color1: "#84b6f4",
+            color2: "#3d8ced"
           },
           {
             title: "Activos",
             icon: "check_circle",
             value: this.numClientesActivos,
-            color1: "#6d8ed9",
-            color2: "#4e76d1"
+            color1: "#77dd77",
+            color2: "#41cf41"
           },
           {
             title: "Borrados",
             icon: "no_accounts",
             value: this.numClientesBorrados,
-            color1: "#9fb7ff",
-            color2: "#82a1ff"
+            color1: "#ff6961",
+            color2: "#fe261b"
           },
           {
             title: "Ultimo agregado",
             icon: "error",
             value: this.ultimoCliente,
-            color1: "#a0c8ff",
-            color2: "#8bbcff"
-          }
+            color1: "#87a3eb",
+            color2: "#5f84e4"
+          }
         ]
         : [
           {

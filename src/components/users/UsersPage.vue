@@ -2,7 +2,7 @@
   <q-page class="color-fondo">
     <!-- Sección de las 4 cards de la parte superior -->
     <div icon_position="left" class="espacio-borde-cards">
-      <q-card class="bg-transparent no-shadow no-border" bordered>
+      <q-card class="bg-transparent no-shadow no-border" bordered >
         <q-card-section class="q-pa-none">
           <div class="row q-col-gutter-sm">
             <div v-for="(item, index) in items" :key="index" class="col-md-3 col-sm-12 col-xs-12">
@@ -153,29 +153,29 @@ export default {
           title: 'Usuarios',
           icon: 'person',
           value: this.numUsuarios,
-          color1: '#5064b5',
-          color2: '#3e51b5',
+          color1: '#1162c6',
+          color2: '#0b3b77',
         },
         {
           title: 'Usuarios Activos',
           icon: 'check_circle',
           value: this.numUsuariosActivos,
-          color1: '#6d8ed9',
-          color2: '#4e76d1',
+          color1: '#238b23',
+          color2: '#185f18',
         },
         {
           title: 'Usuarios Eliminados',
           icon: 'delete_sweep',
           value: this.numUsuariosInactivos,
-          color1: '#9fb7ff',
-          color2: '#82a1ff',
+          color1: '#c20900',
+          color2: '#9d0800',
         },
         {
           title: 'Último Usuario',
           icon: 'person_add',
           value: this.nombreUsuarioReciente,
-          color1: '#a0c8ff',
-          color2: '#8bbcff',
+          color1: '#204cc3',
+            color2: "#17378b"
         },
           ]
         : [

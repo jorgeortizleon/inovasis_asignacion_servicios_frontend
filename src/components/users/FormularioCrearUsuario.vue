@@ -4,8 +4,8 @@
       <div class="text-h6">Crear Usuario</div>
     </q-card-section>
     <q-card-section class="q-pt-none">
-      <q-form @submit.prevent="crearUsuario" @reset="resetForm" class="q-gutter-md">
-        <div class="q-gutter-md espacio-borde-izquierda-form">
+      <q-form ref="form" @submit.prevent="crearUsuario" @reset="resetForm" class="q-gutter-md">
+                <div class="q-gutter-md espacio-borde-izquierda-form">
             <q-input filled v-model="usuario" label="Nombre de Usuario" hint="Introduzca el nombre de usuario" lazy-rules
               :rules="usuarioRules">
               <template v-slot:prepend>
@@ -59,14 +59,33 @@
             </template>
           </q-input>
         </div>
-          <div class="q-gutter-md">
-            <q-select filled v-model="idRol" :options="roles" label="Rol" hint="Seleccione un rol" emit-value map-options
-              :rules="rolRules" >
-              <template v-slot:prepend>
-                <q-icon name="accessibility" />
-              </template>
-            </q-select>
+        <div class="q-gutter-md">
+          <div class="row items-center">
+            <!-- Campo de selección de Rol -->
+            <div class="col">
+              <q-select filled v-model="idRol" :options="roles" label="Rol" hint="Seleccione un rol" emit-value
+                map-options :rules="rolRules">
+                <template v-slot:prepend>
+                  <q-icon name="accessibility" />
+                </template>
+              </q-select>
+            </div>
+
+            <!-- Espacio entre los campos de selección -->
+            <div class="q-mr-md"></div> <!-- Espacio pequeño -->
+
+            <!-- Campo de selección de Estado -->
+            <div class="col">
+              <q-select filled v-model="estado" :options="estados" label="Estado" hint="Seleccione el estado del usuario"
+                emit-value map-options :rules="estadoRules">
+                <template v-slot:prepend>
+                  <q-icon name="check_circle" />
+                </template>
+              </q-select>
+            </div>
           </div>
+        </div>
+  
       </q-form>
     </q-card-section>
     <q-card-actions>
@@ -92,6 +111,7 @@ export default {
       contrasena: '',
       confirmarContrasena: '',
       idRol: null,
+      estado: 1,
       showPassword: false,
       showConfirmPassword: false,
       usuarioRules: [
@@ -113,6 +133,10 @@ export default {
         (v) => !!v || 'Por favor, confirma la contraseña',
         (v) => v === this.contrasena || 'Las contraseñas no coinciden',
       ],
+      estados: [
+      { label: 'Activo', value: 1 },
+      { label: 'No Activo', value: 0 },
+    ],
       roles: [
         { label: 'Administrador', value: 1 },
         { label: 'Supervisor', value: 2 },
@@ -122,6 +146,7 @@ export default {
         { label: 'Cobranza', value: 6 },
       ],
       rolRules: [(v) => !!v || 'Por favor, selecciona un rol'],
+      estadoRules: [(v) => v !== null || 'Por favor, selecciona el estado'],
     };
   },
 
@@ -131,33 +156,39 @@ export default {
       this.$emit('cerrarDialogo');
     },
     async crearUsuario() {
-      try {
-        // Aquí coloca la lógica para crear el usuario
-        // Puedes usar axios u otro cliente HTTP
-        await axios.post('http://localhost:8181/usuarios/crear', {
-          userName: this.usuario,
-          nombreCompleto: this.nombreCompleto,
-          correo: this.correo,
-          idRol: this.idRol,
-          contrasena: this.contrasena,
-        });
+  try {
+    // Validar el formulario antes de enviar los datos al servidor
+    const isValid = await this.$refs.form.validate();
+    
+    if (isValid) {
+      // Aquí coloca la lógica para crear el usuario
+      // Puedes usar axios u otro cliente HTTP
+      await axios.post('http://localhost:8181/usuarios/crear', {
+        userName: this.usuario,
+        nombreCompleto: this.nombreCompleto,
+        correo: this.correo,
+        idRol: this.idRol,
+        contrasena: this.contrasena,
+        estado: this.estado ? 1 : 0, // Convierte el valor booleano en 1 (Activo) o 0 (No Activo)
+      });
 
-        // Emite un evento llamado 'usuarioCreado' para notificar a UsersForm.vue
-        this.$emit('usuarioCreado');
+      // Emite un evento llamado 'usuarioCreado' para notificar a UsersForm.vue
+      this.$emit('usuarioCreado');
 
-        // Cierra el diálogo de creación de usuario
-        this.$emit('cerrarDialogo');
-        this.$emit('actualizarTabla');
+      // Cierra el diálogo de creación de usuario
+      this.$emit('cerrarDialogo');
+      this.$emit('actualizarTabla');
 
-        this.$q.notify({
-          color: 'positive',
-          icon: 'check',
-          message: 'Usuario creado correctamente.',
-        });
-      } catch (error) {
-        console.error('Error al crear el usuario:', error);
-      }
-    },
+      this.$q.notify({
+        color: 'positive',
+        icon: 'check',
+        message: 'Usuario creado correctamente.',
+      });
+    }
+  } catch (error) {
+    console.error('Error al crear el usuario:', error);
+  }
+},
     
     resetForm() {
       // Restablecer los valores de los campos del formulario al valor inicial

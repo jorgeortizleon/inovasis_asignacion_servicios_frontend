@@ -4,7 +4,7 @@
         <div class="text-h6">Editar Usuario</div>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <q-form @submit.prevent="editarUsuario" @reset="resetForm" class="q-gutter-md">
+        <q-form ref="form" @submit.prevent="editarUsuario" @reset="resetForm" class="q-gutter-md">
           <div class="q-gutter-md espacio-borde-izquierda-form">
             <q-input filled v-model="usuario" label="Nombre de Usuario" hint="Introduzca el nombre de usuario" lazy-rules
               :rules="usuarioRules">
@@ -59,22 +59,31 @@
             </template>
           </q-input>
         </div>
-          <div class="q-gutter-md">
-    <q-select filled v-model="idRol" :options="roles" label="Rol" hint="Seleccione un rol" emit-value map-options
-      :rules="rolRules">
-      <template v-slot:prepend>
-        <q-icon name="accessibility" />
-      </template>
-    </q-select>
-  </div>  
-  <!-- Nuevo q-select para el estado del usuario -->
-  <div class="q-gutter-md">
-          <q-select filled v-model="estado" :options="estados" label="Estado" hint="Seleccione el estado del usuario" emit-value
-            :rules="estadoRules">
-            <template v-slot:prepend>
-              <q-icon name="check_circle" />
-            </template>
-          </q-select>
+        <div class="q-gutter-md">
+          <div class="row items-center">
+            <!-- Campo de selección de Rol -->
+            <div class="col">
+              <q-select filled v-model="idRol" :options="roles" label="Rol" hint="Seleccione un rol" emit-value
+                map-options :rules="rolRules">
+                <template v-slot:prepend>
+                  <q-icon name="accessibility" />
+                </template>
+              </q-select>
+            </div>
+
+            <!-- Espacio entre los campos de selección -->
+            <div class="q-mr-md"></div> <!-- Espacio pequeño -->
+
+            <!-- Campo de selección de Estado -->
+            <div class="col">
+              <q-select filled v-model="estado" :options="estados" label="Estado" hint="Seleccione el estado del usuario"
+                emit-value map-options :rules="estadoRules">
+                <template v-slot:prepend>
+                  <q-icon name="check_circle" />
+                </template>
+              </q-select>
+            </div>
+          </div>
         </div>
         </q-form>
       </q-card-section>
@@ -105,6 +114,7 @@
         idRol: null,
         showPassword: false,
         showConfirmPassword: false,
+        estado: 1,
         usuarioRules: [
           (v) => !!v || 'El nombre de usuario es requerido.',
         ],
@@ -152,9 +162,11 @@
         this.usuario = newValue.userName || '';
         this.nombreCompleto = newValue.nombreCompleto || '';
         this.correo = newValue.correo || '';
-        this.idRol = newValue.idRol || null;
+        this.idRol = newValue.idRol; // Elimina || null
         this.contrasena = newValue.contrasena || '';
         this.confirmarContrasena = ''; // Mantén la confirmación de contraseña en blanco
+        this.estado = newValue.estado || null;
+
       },
     },
   },
@@ -170,9 +182,11 @@
         this.usuario = newValue.userName || '';
         this.nombreCompleto = newValue.nombreCompleto || '';
         this.correo = newValue.correo || '';
-        this.idRol = newValue.idRol || null; // Establece el valor de idRol
+        this.idRol = newValue.idRol; // Establece el valor de idRol
         this.contrasena = newValue.contrasena || ''; // Mantén la contraseña en blanco
         this.confirmarContrasena = ''; // Mantén la confirmación de contraseña en blanco
+        this.estado = newValue.estado ;
+
       },
     },
 
@@ -185,38 +199,43 @@
       this.$emit('cerrarDialogo');
     },
     async editarUsuario() {
-        try {
-         // Construye el objeto de usuario a editar con los datos del formulario
+  try {
+    // Validar el formulario antes de enviar los datos al servidor
+    const isValid = await this.$refs.form.validate();
+    
+    if (isValid) {
+      // Construye el objeto de usuario a editar con los datos del formulario
       const usuarioEditado = {
         userName: this.usuario,
-          nombreCompleto: this.nombreCompleto,
-          correo: this.correo,
-          idRol: this.idRol,
-          contrasena: this.contrasena,
+        nombreCompleto: this.nombreCompleto,
+        correo: this.correo,
+        idRol: this.idRol,
+        contrasena: this.contrasena,
+        estado: this.estado, // Agrega el estado del usuario al objeto
       };
 
       // Realiza la solicitud PUT para editar el usuario
       await axios.put(`http://localhost:8181/usuarios/${this.usuarioEditar.idUsuario}`, usuarioEditado);
 
-  
-          // Emite un evento llamado 'usuarioEditado'
-          this.$emit('usuarioEditado');
-  
-          // Cierra el diálogo de edición de usuario
-          this.$emit('cerrarDialogo');
-  
-          // Emite un evento para solicitar la actualización de la tabla
-          this.$emit('actualizarTabla');
-  
-          this.$q.notify({
-            color: 'positive',
-            icon: 'check',
-            message: 'Usuario editado correctamente.',
-          });
-        } catch (error) {
-          console.error('Error al editar el usuario:', error);
-        }
-      },
+      // Emite un evento llamado 'usuarioEditado'
+      this.$emit('usuarioEditado');
+
+      // Cierra el diálogo de edición de usuario
+      this.$emit('cerrarDialogo');
+
+      // Emite un evento para solicitar la actualización de la tabla
+      this.$emit('actualizarTabla');
+
+      this.$q.notify({
+        color: 'positive',
+        icon: 'check',
+        message: 'Usuario editado correctamente.',
+      });
+    }
+  } catch (error) {
+    console.error('Error al editar el usuario:', error);
+  }
+},
     },
   };
   </script>
