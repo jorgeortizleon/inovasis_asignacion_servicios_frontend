@@ -50,8 +50,8 @@
               </template>
               <template v-slot:body-cell-actions="props2">
                 <q-td :props="props2" class="q-gutter-sm">
-                  <q-btn icon="edit" color="info" dense size="sm" @click="editarCliente(props2)" />
-                  <q-btn icon="delete" color="negative" dense size="sm" @click="borrarCliente(props2)" />
+                  <q-btn icon="edit" color="primary" flat round dense @click="editarCliente(props2)" />
+                  <q-btn icon="delete" color="negative" flat round dense @click="borrarCliente(props2)" />
                 </q-td>
               </template>
             </q-table>
@@ -115,7 +115,8 @@
         <q-card-actions>
           <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
           <q-space></q-space>
-          <q-btn flat label="Crear" icon-right="add_circle" color="green" @click="botonCrearCliente()" :disable="disableBtn()" />
+          <q-btn flat label="Crear" icon-right="add_circle" color="green" @click="botonCrearCliente()"
+            :disable="disableBtn() || formatoNumeroValidoBtn(this.telefono) || formatoCorreoValidoBtn(this.correo) || soloMayusculasSinAcentosBtn(this.razonSocial)" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -157,17 +158,17 @@
                 <q-input filled v-model="telefono" label="Teléfono" hint="Introduzca el teléfono" lazy-rules
                   :rules="[noVacio, formatoNumeroValido]">
                   <template v-slot:prepend>
-                  <q-icon name="call" />
-                </template>
-              </q-input>
+                    <q-icon name="call" />
+                  </template>
+                </q-input>
               </div>
               <div class="col">
                 <q-select filled v-model="estado" :options="options" label="Estado" emit-value map-options
                   hint="Introduzca el estado">
                   <template v-slot:prepend>
-                  <q-icon name="checklist_rtl" />
-                </template>
-              </q-select>
+                    <q-icon name="checklist_rtl" />
+                  </template>
+                </q-select>
               </div>
             </div>
           </q-form>
@@ -175,7 +176,8 @@
         <q-card-actions>
           <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
           <q-space></q-space>
-          <q-btn flat label="Editar" icon-right="edit" color="green" @click="botonEditarCliente()" />
+          <q-btn flat label="Editar" icon-right="edit" color="green" @click="botonEditarCliente()"
+          :disable="disableBtn() || formatoNumeroValidoBtn(this.telefono) || formatoCorreoValidoBtn(this.correo) || soloMayusculasSinAcentosBtn(this.razonSocial)"/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -378,30 +380,30 @@ export default {
             title: "Clientes",
             icon: "person",
             value: this.numClientes,
-            color1: "#84b6f4",
-            color2: "#3d8ced"
+            color1: "#1162c6",
+            color2: "#0b3b77"
           },
           {
             title: "Activos",
             icon: "check_circle",
             value: this.numClientesActivos,
-            color1: "#77dd77",
-            color2: "#41cf41"
+            color1: "#238b23",
+            color2: "#185f18"
           },
           {
             title: "Borrados",
             icon: "no_accounts",
             value: this.numClientesBorrados,
-            color1: "#ff6961",
-            color2: "#fe261b"
+            color1: "#c20900",
+            color2: "#9d0800"
           },
           {
             title: "Ultimo agregado",
             icon: "error",
             value: this.ultimoCliente,
-            color1: "#87a3eb",
-            color2: "#5f84e4"
-          }
+            color1: "#204cc3",
+            color2: "#17378b"
+          }
         ]
         : [
           {
@@ -627,8 +629,37 @@ export default {
       } else {
         return true;
       }
+    },
 
-    }
+    formatoNumeroValidoBtn(value) {
+      const formatoNumero = /^[0-9\s]+$/;
+      const esValido = formatoNumero.test(value);
+      if (esValido) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+
+    formatoCorreoValidoBtn(value) {
+      const formatoCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      const esValido = formatoCorreo.test(value);
+      if (esValido) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+
+    soloMayusculasSinAcentosBtn(value) {
+      const mayusculas = /^[A-Z\s]*$/;
+      const esValido = mayusculas.test(value);
+      if (esValido) {
+        return false;
+      } else {
+        return true;
+      }
+    },
 
   },
 
