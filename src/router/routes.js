@@ -37,6 +37,9 @@ const routes = [
       { path: '/about', component: () => import('components/About.vue')},
       { path: '/users', component: () => import('components/users/UsersPage.vue')},
       { path: '/clientes', component: () => import('components/ClientesView.vue')},
+      { path: '/servicios', component: () => import('components/PRUEBA/servicios.vue')},
+      { path: '/servicioshistory', component: () => import('components/PRUEBA/ServiceHistory.vue')},
+
     ]
   },
       { path: '/login', component: () => import('components/auth/LoginForm.vue') },
