@@ -500,9 +500,9 @@
         flat
         label="Guardar Cambios"
         color="primary"
-        @click="saveServiceChanges"
+        @click="saveService"
       />
-      <q-btn flat label="Cerrar" color="red" @click="showDialogEditarServicio = false" />
+      <q-btn flat label="Cerrar" color="red" @click="closeDialog" />
     </q-card-actions>
   </q-card>
 </q-dialog>

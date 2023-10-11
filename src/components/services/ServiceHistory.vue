@@ -68,7 +68,7 @@ export default {
       showDialogEditarServicio: false, // Para controlar la visibilidad del diálogo de edición de servicio
       selectedFilter: '', // Nuevo: propiedad para rastrear el filtro seleccionado
       columns: [
-        { name: 'codigo', align: 'left', label: 'Código', field: 'codigo', sortable: true },
+        { name: 'codigo', align: 'left', label: 'Códigooooooo', field: 'codigo', sortable: true },
         { name: 'razonsocial', align: 'left', label: 'Razon Social', field: 'razonsocial', sortable: true },
         { name: 'supervisor', align: 'left', label: 'Supervisor', field: 'supervisor', sortable: true },
         { name: 'usuario', align: 'left', label: 'Usuario', field: 'usuario', sortable: true },

@@ -34,34 +34,16 @@
           </q-item-section>
         </q-item>
 
-        <q-expansion-item icon="home_repair_service" label="Servicios" :disable="this.permisoServicios">
-          <q-list class="q-pl-lg">
-            <q-item to="/Map" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="add" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Nuevo</q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item to="/MapMarker" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="visibility" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Ver</q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item to="/StreetView" active-class="q-item-no-link-highlighting">
-              <q-item-section avatar>
-                <q-icon name="find_in_page" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Detalles</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-expansion-item>
+        <q-item to="/servicios" active-class="q-item-no-link-highlighting my-menu-link" v-ripple :disable="this.permisoServicios">
+          <q-item-section avatar>
+            <q-icon name="home_repair_service" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Servicios</q-item-label>
+            <q-item-label caption>Caption</q-item-label>
+          </q-item-section>
+        </q-item>
+
 
         <q-item to="/clientes" active-class="q-item-no-link-highlighting my-menu-link" v-ripple :disable="this.permisoClientes">
           <q-item-section avatar>
@@ -69,16 +51,6 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Clientes</q-item-label>
-            <q-item-label caption>Caption</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item to="/servicios" active-class="q-item-no-link-highlighting my-menu-link" v-ripple :disable="this.permisoReportes">
-          <q-item-section avatar>
-            <q-icon name="analytics" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Reportes</q-item-label>
             <q-item-label caption>Caption</q-item-label>
           </q-item-section>
         </q-item>

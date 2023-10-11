@@ -46,7 +46,7 @@
                       <q-select
                   v-model="selectedFilterModel"
                   :options="filterOptions"
-                  label="Mostrar"
+                  label="Ver"
                   emit-value
                   map-options
                   dense
@@ -71,8 +71,20 @@
                   <template v-if="props2.col.field === 'Editar/Ver'">
                     {{ props2.row[props2.col.field] }}
                     <q-btn flat round dense color="primary" icon="edit"    @click="openEditDialog(props2.row)" />
-                    <q-btn flat round dense color="green" icon="remove_red_eye" @click="viewServiceDetails(props2.row)" />
-                    <q-btn flat round dense color="blue" icon="history" @click="viewServiceHistory(props2.row)" />
+                    <router-link :to="{ name: 'historial-servicio', params: { id: props2.row.idServicio } }">
+                    <template v-slot:default="{ navigate, href }">
+                      <q-btn
+                        flat
+                        round
+                        dense
+                        color="primary"
+                        icon="list"
+                        @click="navigate"
+                        :href="href"
+                      >
+                                          </q-btn>
+                    </template>
+                  </router-link>
                   </template>
                   <template v-else>
                     {{ props2.row[props2.col.field] }}
@@ -99,9 +111,7 @@
     <FormularioCrearServicio @cerrarDialogo="showDialogCreate = false" @servicio-creado="loadServices" v-if="showDialogCreate" />
   </q-dialog>
   <q-dialog v-model="showDialogEdit" ref="dialogEdit" persistent>
-    <FormularioEditarServicio
-      :servicioAEditar="servicioAEditar"
-      @cerrarDialogo="closeEditDialog"
+    <FormularioEditarServicio :servicioEditar="servicioAEditar" @cerrarDialogo="closeEditDialog" @servicioEditado="loadServices"
     />
   </q-dialog>
   </q-page>
@@ -141,7 +151,7 @@ export default {
           { name: 'usuarioAsignado', align: 'left', label: 'Usuario', field: 'usuarioAsignado', sortable: true },
           { name: 'fecha', align: 'left', label: 'Fecha Inicio', field: 'fecha', sortable: true },
           { name: 'tituloservicio', align: 'left', label: 'Titulo Servicio', field: 'tituloservicio', sortable: true },
-          { name: 'Editar/Ver', align: 'left', label: 'Editar/Ver/Historial', field: 'Editar/Ver', sortable: true },
+          { name: 'Editar/Ver', align: 'left', label: 'Editar/Historial', field: 'Editar/Ver', sortable: true },
           { name: 'estado', align: 'center', label: 'Estado', field: 'estado', sortable: false },
         ],
         items: [
@@ -205,7 +215,6 @@ export default {
     },
   },
 
-    
   },
   methods: {
     // Función para cargar los servicios desde el backend
