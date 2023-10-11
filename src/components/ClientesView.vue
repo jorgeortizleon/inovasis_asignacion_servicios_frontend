@@ -177,7 +177,7 @@
           <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
           <q-space></q-space>
           <q-btn flat label="Editar" icon-right="edit" color="green" @click="botonEditarCliente()"
-          :disable="disableBtn() || formatoNumeroValidoBtn(this.telefono) || formatoCorreoValidoBtn(this.correo) || soloMayusculasSinAcentosBtn(this.razonSocial)"/>
+            :disable="disableBtn() || formatoNumeroValidoBtn(this.telefono) || formatoCorreoValidoBtn(this.correo) || soloMayusculasSinAcentosBtn(this.razonSocial)" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -376,7 +376,7 @@ export default {
     items: function () {
       return this.icon_position === "left"
         ? [
-        {
+          {
             title: "Clientes",
             icon: "person",
             value: this.numClientes,
@@ -399,7 +399,7 @@ export default {
           },
           {
             title: "Ultimo agregado",
-            icon: "error",
+            icon: "replay",
             value: this.ultimoCliente,
             color1: "#204cc3",
             color2: "#17378b"
@@ -465,6 +465,9 @@ export default {
           axios.get("http://localhost:8181/clientes").then((resultado) => {
             this.rows = resultado.data;
           });
+          axios.get("http://localhost:8181/clientes/clientesActivos").then((resultado) => {
+            this.numClientesActivos = resultado.data
+          });
           this.$q.notify({
             type: 'positive',
             message: "Cliente creado con exito",
@@ -481,9 +484,11 @@ export default {
             timeout: 1000,
           });
         });
+
       axios.get("http://localhost:8181/clientes").then((resultado) => {
         this.rows = resultado.data;
       });
+
     },
 
     borrarCliente(props2) {
@@ -527,6 +532,9 @@ export default {
         axios.put(`http://localhost:8181/clientes/${this.idEditar}`, clientedto)
           .then(response => {
             console.log('Cliente editado con éxito:');
+            axios.get("http://localhost:8181/clientes/clientesActivos").then((resultado) => {
+              this.numClientesActivos = resultado.data
+            });
             this.$q.notify({
               type: "info",
               message: "Cliente editado con éxito",
@@ -555,6 +563,7 @@ export default {
         console.error('Índice fuera de rango');
       }
       this.botonCloseDialogs();
+
     },
 
     botonBorrarCliente() {
@@ -565,6 +574,9 @@ export default {
         .then(response => {
           console.log('Cliente eliminado con éxito:', response.status);
           this.rows.splice(this.indexBorrar, 1);
+          axios.get("http://localhost:8181/clientes/clientesActivos").then((resultado) => {
+            this.numClientesActivos = resultado.data
+          });
           this.$q.notify({
             type: "negative",
             message: "Cliente eliminado con éxito",

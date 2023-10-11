@@ -35,7 +35,7 @@
             </q-form>
           </q-card-section>
           <q-card-actions class="q-px-lg">
-            <q-btn unelevated size="lg" color="blue" class="full-width text-white" label="Iniciar sesión" @click.prevent="autenticar" />
+            <q-btn unelevated size="lg" color="blue" class="full-width text-white" label="Iniciar sesión" @click.prevent="autenticar" :disable="disableBtn()" />
           </q-card-actions>
           <q-card-section class="text-center q-pa-sm">
             <!-- <p class="text-grey-6">Olvidaste tu contraseña?</p> -->
@@ -95,6 +95,13 @@ export default {
           position: "top",
           actions: [{ label: "Cerrar", color: "white" }],
         });
+      }
+    },
+    disableBtn() {
+      if (this.username !== "" && this.password !== "") {
+        return false;
+      } else {
+        return true;
       }
     },
   },

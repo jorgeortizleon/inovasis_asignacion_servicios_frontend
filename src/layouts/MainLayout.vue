@@ -55,7 +55,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/servicioshistory" active-class="q-item-no-link-highlighting my-menu-link" v-ripple :disable="this.permisoConfig">
+        <q-item to="/configuracion" active-class="q-item-no-link-highlighting my-menu-link" v-ripple :disable="this.permisoConfig">
           <q-item-section avatar>
             <q-icon name="settings" />
           </q-item-section>
