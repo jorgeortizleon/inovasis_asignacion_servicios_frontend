@@ -12,9 +12,9 @@
                   <div class="text-h6">Titulo del servicio</div>
                   <div class="text-h5">{{ items[0].value }}</div> <!-- Usar el valor de Ventas -->
                 </div>
-                <div class="col-2">
+                <!-- <div class="col-2">
                   <q-icon size="62px" name="trending_up"/>
-                </div>
+                </div> -->
               </div>
             </q-card-section>
           </q-card>
@@ -30,7 +30,7 @@
                   <div class="text-h5">{{ items[1].value }}</div> <!-- Usar el valor de Metas -->
                 </div>
                 <div class="col-2">
-                  <q-icon size="62px" name="far fa-dot-circle"/>
+                  <q-icon size="62px" name="history"/>
                 </div>
               </div>
             </q-card-section>
@@ -45,12 +45,12 @@
             <div class="col-10">
               <div class="text-h6">Último Estado</div>
               <div class="text-h5">
-                <q-icon name="arrow_downward" />
+                <!-- <q-icon name="arrow_downward" /> -->
                 {{ items[2].value }} <!-- Usar el valor de % Cambio -->
               </div>
             </div>
             <div class="col-2">
-              <q-icon size="62px" name="compare_arrows" />
+              <q-icon size="62px" name="api" />
             </div>
           </div>
         </q-card-section>
@@ -58,11 +58,7 @@
     </div>
   </div>
 </div>
-      <div class="espacio-borde-cards">
-      <div class="row q-col-gutter-sm">
-        <!-- Tarjeta de Ventas -->
-        <div class="col-md-4 col-sm-12 col-xs-12">
-          <q-card>
+<!-- <q-card >
             <q-card-section>
               <div class="text-h6">Información del Servicio</div>
               <div class="text-h7">
@@ -75,15 +71,69 @@
                 Supervisor: {{ servicioDetails.usuarioCreado }}
               </div>
             </q-card-section>
-          </q-card>
+          </q-card> -->
+<!-- --------------------- -->
+      <div class="espacio-borde-cards" >
+      <div class="row q-col-gutter-sm ">
+        <!-- Tarjeta de Ventas -->
+        <div class="col-md-4 col-sm-12 col-xs-12">
+          <div class="q-card">
+            <q-card-section>
+              <div class="text-h6">Información del Servicio</div>
+            </q-card-section>
+  <div style="display: flex;">
+
+    <!-- Primera columna con título y subtitulo -->
+    <div style="flex: 1; padding: 16px;">
+      <div class="text-h6">No/ID</div>
+      <div class="text-h7">1355</div>
+    </div>
+
+    <!-- Segunda columna con título y texto -->
+    <div style="flex: 1; padding: 16px;">
+      <div class="text-h6">Fecha de inicio</div>
+      <div class="text-h7">{{ servicioDetails.fecha }}</div>
+    </div>
+  </div>
+  <div style="display: flex;">
+    <!-- Primera columna con título y subtitulo -->
+    <div style="flex: 1; padding: 16px;">
+      <div class="text-h6">Supervisor</div>
+      <div class="text-h7">{{ servicioDetails.usuarioCreado }}</div>
+    </div>
+
+    <!-- Segunda columna con título y texto -->
+    <div style="flex: 1; padding: 16px;">
+      <div class="text-h6">Asignado</div>
+      <div class="text-h7">{{ servicioDetails.usuarioAsignado }}</div>
+    </div>
+  </div>
+</div>
         </div>
+        <!-- Segundo card -->
         <div class="col-md-4 col-sm-12 col-xs-12">
           <q-card>
             <q-card-section>
               <div class="text-h6">Información del Cliente</div>
-              <div class="text-h7">
-                Razón Social: {{ servicioDetails.razonSocial }}
+            </q-card-section>
+              <q-card-section>
+              <div class="text-h6">
+                Clave
               </div>
+              <div class="text-h7">
+               {{ servicioDetails.razonSocial }}
+              </div>
+            </q-card-section>
+
+            <q-card-section>
+              <div class="text-h6">
+                Razón Social
+              </div>
+              <div class="text-h7">
+                {{ servicioDetails.razonSocial }}
+              </div>
+            </q-card-section>
+            <!-- </q-card-section>
               <div v-if="mostrarCamposAdicionales">
                 <div class="text-h7">Campos Adicionales Necesarios</div>
                 <ul>
@@ -93,20 +143,71 @@
                   <li class="text-h7" v-if="servicioDetails.hojaServicio === 1">Hoja de Servicio</li>
                 </ul>
               </div>
-            </q-card-section>
+            </q-card-section> -->
           </q-card>
         </div>
+        <!-- tercer card -->
         <div class="col-md-4 col-sm-12 col-xs-12">
-          <q-card>
+          <q-card style="height: 235px;">
           <q-card-section>
             <div class="text-h6">Observaciones</div>
-            <div v-for="(line, index) in items[5].lines" :key="index" style="font-size: 16px; color: black;">{{ line }}</div>
-           
+          </q-card-section>
+          <q-card-section>
+            <div v-for="(line, index) in items[5].lines" :key="index" style="font-size: 16px; color: black;">
+              <p :title="line">
+            {{ line }}
+          </p></div>
           </q-card-section>
         </q-card>
         </div>
         </div>
         </div>
+
+        <!-- los dos cards abajo de los 3 -->
+        <div class="row q-col-gutter-sm q-py-sm espacio-borde-cards">
+          <!-- primer card -->
+          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-card class="fit no-shadow" bordered>
+              <q-card-section>
+                <div class="text-h6">Requisitos</div>
+                <div class="row justify-center">
+                  <!-- Checkbox 1 y 2 a la izquierda -->
+                  <div class="col-6">
+                    <q-checkbox disable size="lg" v-model="checkbox1" label="Hoja de Servicio"></q-checkbox>
+                  </div>
+                  <div class="col-6">
+                    <q-checkbox disable size="lg" v-model="checkbox2" label="Factura"></q-checkbox>
+                  </div>
+                  <!-- Checkbox 3 y 4 a la derecha -->
+                  <div class="col-6">
+                    <q-checkbox disable size="lg" v-model="checkbox3" label="Remisión"></q-checkbox>
+                  </div>
+                  <div class="col-6">
+                    <q-checkbox disable size="lg" v-model="checkbox4" label="Empresa de Póliza"></q-checkbox>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+
+          </div>
+          <!-- segundo card -->
+          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <q-card class="my-card no-shadow" bordered style="max-width: 600px;">
+              <q-card-section>
+                <div class="text-h6">
+                  Descripcion del servicio
+                </div>
+              </q-card-section>
+              <q-card-section style="max-height: 110px; overflow: hidden;">
+                <p title="Texto completo: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras eget metus sit amet velit bibendum tincidunt. Quisque non quam id urna cursus blandit. Nulla facilisi. Morbi quis nunc nec leo facilisis eleifend. Sed eu turpis sit amet libero feugiat eleifend. aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras eget metus sit amet velit bibendum tincidunt. Quisque non quam id urna cursus blandit. Nulla facilisi. Morbi quis nunc nec leo facilisis eleifend. Sed eu turpis sit amet libero feugiat eleifend. aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaa aaaaa aaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaz
+                </p>
+              </q-card-section>
+            </q-card>
+
+          </div>
+        </div>
+
       <!-- Sección de la tabla de servicios -->
     <div class="row q-col-gutter-sm espacio-borde-table">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -129,7 +230,8 @@
                   'bg-azulverde-4': props2.row.descripcion === 'Completado',
                   'bg-green-4': props2.row.descripcion === 'Inicio',
                   'bg-blue-4': props2.row.descripcion === 'En Proceso',
-                  'bg-yellow-4': props2.row.descripcion === 'Pendiente'
+                  'bg-yellow-4': props2.row.descripcion === 'Pendiente',
+                  'bg-red-4': props2.row.descripcion === 'No Completado'
                 }">
                   {{ props2.row.descripcion }}
                 </q-td>
@@ -145,7 +247,7 @@
                 v-model="nuevaObservacion"
                 label="Nueva Observación"
                 type="textarea"
-                class="q-ma-none full-width" 
+                class="q-ma-none full-width"
               />
             </q-card-section>
             <q-card-actions>
@@ -159,7 +261,7 @@
     </div>
   </q-page>
 </template>
-  
+
 <script>
 
 import { ref, } from 'vue';
@@ -169,17 +271,21 @@ export default {
   name: 'ServiciosPage',
 
   components: {
-    
+
   },
 
   data() {
     return {
+      checkbox1: ref(true),
+      checkbox2: ref(true),
+      checkbox3: ref(false),
+      checkbox4: ref(true),
       mode: 'list',
       filteredServices: [],
       filter: '',
       selectedFilter: '',
-      estadoColor: '', 
-      services: [], 
+      estadoColor: '',
+      services: [],
       servicioDetails: {}, // Almacena los detalles del servicio
       estadoFinal: '',
       mostrarDialogoObservacion: false,
@@ -191,7 +297,7 @@ export default {
 
       ],
       items: [
-       
+
         {
           title: 'Titulo del servicio',
           icon: 'info',
@@ -205,7 +311,7 @@ export default {
           icon: 'schedule',
           color1: '#1162c6',
           color2: '#0b3b77',
-          value: '', 
+          value: '',
           icon_position: 'left', // Posición del icono
         },
         {
@@ -244,6 +350,10 @@ export default {
       return 'En Proceso';
     } else if (this.servicioDetails.estado === 'Pendiente') {
       return 'Pendiente';
+    } else if (this.servicioDetails.estado === 'Inicio') {
+      return 'Inicio'
+    } else if (this.servicioDetails.estado === 'No Completado') {
+      return 'No Completado'
     } else {
       return 'Desconocido'; // Puedes cambiar esto a un valor predeterminado si es necesario
     }
@@ -257,7 +367,7 @@ export default {
       this.servicioDetails.hojaServicio === 1
     );
   }
-    
+
   },
   methods: {
     // Función para cargar los hsitorial de los servicios desde el backend
@@ -283,6 +393,10 @@ export default {
         this.estadoColor  = 'bg-azulverde-4';
       } else if (this.estadoFinal === 'Pendiente') {
         this.estadoColor  = 'bg-yellow-4';
+      } else if (this.estadoFinal === 'Inicio') {
+        this.estadoColor  = 'bg-green-4';
+      } else if (this.estadoFinal === 'No Completado') {
+        this.estadoColor  = 'bg-red-4';
       }
 
       console.log('historial cargados:', this.services);
@@ -313,6 +427,10 @@ export default {
         this.items[2].value = 'En Proceso';
       } else if (this.servicioDetails.estado === 'Pendiente') {
         this.items[2].value = 'Pendiente';
+      } else if (this.servicioDetails.estado === 'Inicio') {
+        this.items[2].value = 'Inicio';
+      } else if (this.servicioDetails.estado === 'No Completado') {
+        this.items[2].value = 'No Completado';
       } else {
         this.items[2].value = 'Desconocido';
       }
@@ -338,7 +456,7 @@ export default {
       // Verifica tus condiciones para determinar si se muestran los campos adicionales
       if (this.servicioDetails.empresaPoliza === 1 || this.servicioDetails.hojaRemision === 1 || this.servicioDetails.factura === 1 || this.servicioDetails.hojaServicio === 1) {
         mostrarCamposAdicionales = true;
-        detallesCliente.push('Se necesita:'); 
+        detallesCliente.push('Se necesita:');
         if (this.servicioDetails.empresaPoliza === 1) {
           detallesCliente.push('- Empresa de la Póliza');
         }
@@ -356,9 +474,9 @@ export default {
       this.items[4].lines = detallesCliente;
 
       console.log('servicio cargados:', this.servicioDetails);
-   
+
     })
-        
+
         .catch((error) => {
           console.error('Error al cargar estados:', error);
         });
@@ -456,22 +574,22 @@ guardarObservacion() {
   },
 };
 </script>
-  
+
   <style scoped>
   .espacio-borde-cards {
     padding: 10px;
   }
-  
+
   .espacio-borde-table {
     padding-right: 10px;
     padding-left: 10px;
     padding-bottom: 10px;
   }
-  
+
   .color-fondo {
     background-color: #EEEEEE;
   }
-  
+
   /* Clases de fondo para diferentes descripcions */
   .bg-green-4 {
     background-color: green; /* Cambia este color según tus preferencias */
@@ -482,10 +600,9 @@ guardarObservacion() {
   .bg-blue-4 {
     background-color: blue; /* Cambia este color según tus preferencias */
   }
-  
+
   .bg-yellow-4 {
     background-color: yellow; /* Cambia este color según tus preferencias */
   }
 
   </style>
-  

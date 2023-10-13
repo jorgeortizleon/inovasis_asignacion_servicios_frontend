@@ -31,7 +31,7 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <q-card class="text-grey-8 no-shadow" bordered>
           <q-card-section class="q-pa-none">
-            <q-table class="no-shadow" :rows="rows" title="Clientes" :hide-header="mode === 'grid'" :columns="columns"
+            <q-table :dense="$q.screen.lt.md" class="no-shadow" :rows="rows" title="Clientes" :hide-header="mode === 'grid'" :columns="columns"
               row-key="idCliente" :filter="filter" :rows-per-page-options="[10000]" no-data-label="No hay clientes"
               no-results-label="No se encuentra un cliente que coincida">
               <template v-slot:top-right="props">
@@ -245,7 +245,7 @@ const columns = [
     align: 'left',
     label: 'Correo',
     field: 'correo',
-    sortable: true
+    sortable: true,
   },
   {
     name: 'desc',

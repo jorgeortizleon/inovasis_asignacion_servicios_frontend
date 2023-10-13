@@ -95,21 +95,21 @@
       </q-card-actions>
     </q-card>
   </template>
-  
+
   <script>
   import axios from 'axios';
   import { ref, } from 'vue';
 
   import { useAuthStore } from "../../stores/auth";
 
-  
+
   export default {
     props: {
       // Puedes agregar props personalizados si es necesario
     },
     data() {
       return {
-        
+
         nuevoServicio: {
           razonSocial: '',
           userName: '',
@@ -154,18 +154,18 @@
         // Cierra el diálogo de creación de servicio
         this.$emit('cerrarDialogo');
       },
-  
+
       async cargarOpciones() {
         try {
           // Realiza una solicitud al servidor para obtener las opciones de Razón Social
           const responseRazonSocial = await axios.get('http://localhost:8181/clientes/NombreId');
-  
+
           // Transforma la respuesta al formato adecuado
           this.razonSocialOptions = responseRazonSocial.data.map(item => ({
             value: item.idCliente, // Usa "idCliente" como el valor
             label: item.razonSocial, // Usa "razonSocial" como la etiqueta
           }));
-          
+
           // Realiza una solicitud al servidor para obtener las opciones de Usuario
     const responseUsuario = await axios.get('http://localhost:8181/usuarios/nombreId');
 
@@ -185,12 +185,12 @@
         }
 
       },
-  
+
       async crearServicio() {
         try {
           // Validar el formulario antes de enviar los datos al servidor
           const isValid = await this.$refs.form.validate();
-          
+
           if (isValid) {
             const useAuth = useAuthStore();
             const idusuario = ref(useAuth.user.idUsuario);
@@ -217,18 +217,22 @@
               const url = `http://localhost:8181/servicios/crear?IdUsuario=${idusuario.value}&IdUAsignado=${this.nuevoServicio.userName.value}&IdCliente=${this.nuevoServicio.razonSocial.value}&Factura=${this.valoresCheckbox.factura}&HojaServicio=${this.valoresCheckbox.hojaDeServicio}&Descripcion=${this.nuevoServicio.descripcion}&HojaRemision=${this.valoresCheckbox.remision}&EmpresaPoliza=${this.valoresCheckbox.empresaPoliza}&TituloServicio=${this.nuevoServicio.tituloservicio}`;
 
         // Realizar la solicitud POST al servidor sin un cuerpo de solicitud
-            const response = await axios.post(url);
-
-            console.log('Respuesta del servidor:', response);
-
-            // Verifica la respuesta del servidor (puede variar según la API)
+            const response = await axios.post(url).then(response => {
+            console.log('Servicio creado con éxito: ' + response.status);
+            axios.get("http://localhost:8181/servicios/idUltimoServicio")
+              .then((resultado) => {
+                this.idUltimoServicioAgregado = resultado.data;
+                console.log(this.idUltimoServicioAgregado)
+                axios.post("http://localhost:8181/historialServicio/crear?IdServicio=" + this.idUltimoServicioAgregado + "&IdUsuario=" + idusuario.value + "&IdEstadoServicio=1&DescripcionCambio=Servicio creado")
+                console.log("ok")
+                // Verifica la respuesta del servidor (puede variar según la API)
             if (response.status === 201) {
               // Emite un evento llamado 'servicio-creado' para notificar al componente principal
               this.$emit('servicio-creado');
-  
+
               // Cierra el diálogo de creación de servicio
               this.$emit('cerrarDialogo');
-  
+
               // Muestra un mensaje de éxito
               this.$q.notify({
                 color: 'positive',
@@ -240,9 +244,12 @@
               this.$q.notify({
                 color: 'negative',
                 icon: 'warning',
-                message: 'No se pudo crear el servicio. Inténtalo de nuevo más tarde.',
+                message: 'No se pudo crear el servicio. Verifique que lleno todos los campos o consulte el desarrollador',
               });
             }
+              });
+          });;
+            console.log('Respuesta del servidor:', response.status);
           }
         } catch (error) {
           // Manejo de errores
@@ -251,11 +258,11 @@
           this.$q.notify({
             color: 'negative',
             icon: 'warning',
-            message: 'Se produjo un error al crear el servicio. Inténtalo de nuevo más tarde.',
+            message: 'Se produjo un error al crear el servicio. Verifique que se lleno todos los campos o consulte a los desarrolladores',
           });
         }
       },
-  
+
       resetForm() {
         // Restablecer los valores de los campos del formulario al valor inicial
         this.nuevoServicio.TituloServicio = '';
@@ -265,10 +272,9 @@
     },
     mounted() {
         console.log('El método mounted se ha ejecutado.');
-  
+
         // Llama al método cargarOpciones para cargar las opciones de Razón Social y Usuario
         this.cargarOpciones();
       },
   };
   </script>
-  

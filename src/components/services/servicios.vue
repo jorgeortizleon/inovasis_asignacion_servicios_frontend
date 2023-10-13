@@ -1,6 +1,6 @@
 <template>
-    <q-page class="color-fondo">
-        <!-- Sección de las 4 cards de la parte superior -->
+  <q-page class="color-fondo">
+    <!-- Sección de las 4 cards de la parte superior -->
     <div class="espacio-borde-cards">
       <q-card class="bg-transparent no-shadow no-border" bordered>
         <q-card-section class="q-pa-none">
@@ -19,40 +19,26 @@
                   <q-icon :name="item.icon" color="white" size="44px"></q-icon>
                 </q-item-section>
               </q-item>
-              </div>
             </div>
-          </q-card-section>
-        </q-card>
-      </div>
-  
-      <!-- Sección de la tabla de servicios -->
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
+
+    <!-- Sección de la tabla de servicios -->
     <div class="row q-col-gutter-sm espacio-borde-table">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <q-card class="text-grey-8 no-shadow" bordered>
           <q-card-section class="q-pa-none">
-            <q-table
-              ref="myTable"
-              class="no-shadow"
-              :rows="filteredServices"
-              :columns="columns"
-              title="Servicios"
-              :hide-header="mode === 'grid'"
-              :rows-per-page-options="[10000]"
-            >
-            
+            <q-table ref="myTable" class="no-shadow" :rows="filteredServices" :columns="columns" title="Servicios"
+              :hide-header="mode === 'grid'" :rows-per-page-options="[10000]" row-key="idServicio" :filter="filter" no-data-label="No hay Servicios" no-results-label="No se encuentra un servicio que coincida">
+
               <template v-slot:top-right="props">
                 <div class="q-mr-md">
-      <!-- Agregar menú desplegable para seleccionar el filtro -->
-                      <q-select
-                  v-model="selectedFilterModel"
-                  :options="filterOptions"
-                  label="Ver"
-                  emit-value
-                  map-options
-                  dense
-                  class="q-select-filter"
-                />
-              </div>
+                  <!-- Agregar menú desplegable para seleccionar el filtro -->
+                  <q-select v-model="selectedFilterModel" :options="filterOptions" label="Ver" emit-value map-options
+                    dense class="q-select-filter" />
+                </div>
                 <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
                   <template v-slot:append>
                     <q-icon name="search" />
@@ -70,21 +56,13 @@
                 <q-td :props="props2">
                   <template v-if="props2.col.field === 'Editar/Ver'">
                     {{ props2.row[props2.col.field] }}
-                    <q-btn flat round dense color="primary" icon="edit"    @click="openEditDialog(props2.row)" />
+                    <q-btn flat round dense color="primary" icon="edit" @click="openEditDialog(props2.row)" />
                     <router-link :to="{ name: 'historial-servicio', params: { id: props2.row.idServicio } }">
-                    <template v-slot:default="{ navigate, href }">
-                      <q-btn
-                        flat
-                        round
-                        dense
-                        color="primary"
-                        icon="list"
-                        @click="navigate"
-                        :href="href"
-                      >
-                                          </q-btn>
-                    </template>
-                  </router-link>
+                      <template v-slot:default="{ navigate, href }">
+                        <q-btn flat round dense color="primary" icon="list" @click="navigate" :href="href">
+                        </q-btn>
+                      </template>
+                    </router-link>
                   </template>
                   <template v-else>
                     {{ props2.row[props2.col.field] }}
@@ -96,7 +74,8 @@
                   'bg-azulverde-4': props2.row.estado === 'Completado',
                   'bg-green-4': props2.row.estado === 'Inicio',
                   'bg-blue-4': props2.row.estado === 'En Proceso',
-                  'bg-yellow-4': props2.row.estado === 'Pendiente'
+                  'bg-yellow-4': props2.row.estado === 'Pendiente',
+                  'bg-red-4': props2.row.estado === 'No Completado',
                 }">
                   {{ props2.row.estado }}
                 </q-td>
@@ -107,16 +86,17 @@
       </div>
     </div>
     <q-dialog v-model="showDialogCreate" ref="dialogCreate" persistent no-backdrop>
-    <!-- Escucha el evento 'usuarioCreado' y actualiza la tabla -->
-    <FormularioCrearServicio @cerrarDialogo="showDialogCreate = false" @servicio-creado="loadServices" v-if="showDialogCreate" />
-  </q-dialog>
-  <q-dialog v-model="showDialogEdit" ref="dialogEdit" persistent>
-    <FormularioEditarServicio :servicioEditar="servicioAEditar" @cerrarDialogo="closeEditDialog" @servicioEditado="loadServices"
-    />
-  </q-dialog>
+      <!-- Escucha el evento 'usuarioCreado' y actualiza la tabla -->
+      <FormularioCrearServicio @cerrarDialogo="showDialogCreate = false" @servicio-creado="loadServices"
+        v-if="showDialogCreate" />
+    </q-dialog>
+    <q-dialog v-model="showDialogEdit" ref="dialogEdit" persistent>
+      <FormularioEditarServicio :servicioEditar="servicioAEditar" @cerrarDialogo="closeEditDialog"
+        @servicioEditado="loadServices" />
+    </q-dialog>
   </q-page>
 </template>
-  
+
 <script>
 
 import { ref, } from 'vue';
@@ -143,18 +123,18 @@ export default {
       showDialogEdit: false, // Variable para controlar la visibilidad del cuadro de diálogo de edición
       servicioAEditar: null, // Variable para almacenar el servicio que se va a editar
 
-  
+
       columns: [
-          { name: 'idServicio', align: 'left', label: 'Código', field: 'idServicio', sortable: true },
-          { name: 'razonSocial', align: 'left', label: 'Razon Social', field: 'razonSocial', sortable: true },
-          { name: 'usuarioCreado', align: 'left', label: 'Supervisor', field: 'usuarioCreado', sortable: true },
-          { name: 'usuarioAsignado', align: 'left', label: 'Usuario', field: 'usuarioAsignado', sortable: true },
-          { name: 'fecha', align: 'left', label: 'Fecha Inicio', field: 'fecha', sortable: true },
-          { name: 'tituloservicio', align: 'left', label: 'Titulo Servicio', field: 'tituloservicio', sortable: true },
-          { name: 'Editar/Ver', align: 'left', label: 'Editar/Historial', field: 'Editar/Ver', sortable: true },
-          { name: 'estado', align: 'center', label: 'Estado', field: 'estado', sortable: false },
-        ],
-        items: [
+        { name: 'idServicio', align: 'left', label: 'Código', field: 'idServicio', sortable: true },
+        { name: 'razonSocial', align: 'left', label: 'Razon Social', field: 'razonSocial', sortable: true },
+        { name: 'usuarioCreado', align: 'left', label: 'Supervisor', field: 'usuarioCreado', sortable: true },
+        { name: 'usuarioAsignado', align: 'left', label: 'Usuario', field: 'usuarioAsignado', sortable: true },
+        { name: 'fecha', align: 'left', label: 'Fecha Inicio', field: 'fecha', sortable: true },
+        { name: 'tituloservicio', align: 'left', label: 'Titulo Servicio', field: 'tituloservicio', sortable: true },
+        { name: 'Editar/Ver', align: 'left', label: 'Editar/Historial', field: 'Editar/Ver', sortable: true },
+        { name: 'estado', align: 'center', label: 'Estado', field: 'estado', sortable: false },
+      ],
+      items: [
         {
           title: 'Total de Servicios',
           icon: 'settings',
@@ -203,40 +183,41 @@ export default {
         { label: 'Completado', value: 'Completado' },
         { label: 'En Proceso', value: 'En Proceso' },
         { label: 'Pendiente', value: 'Pendiente' },
+        { label: 'No Completado', value: 'No Completado' },
       ];
     },
     selectedFilterModel: {
-    get() {
-      return this.selectedFilter;
+      get() {
+        return this.selectedFilter;
+      },
+      set(value) {
+        this.selectedFilter = value;
+        this.filterServices();
+      },
     },
-    set(value) {
-      this.selectedFilter = value;
-      this.filterServices();
-    },
-  },
 
   },
   methods: {
     // Función para cargar los servicios desde el backend
     loadServices() {
-  axios.get('http://localhost:8181/servicios')
-    .then((response) => {
-      this.services = response.data;
-      this.filteredServices = this.services;
-      this.updateCardValues();
-      console.log('Servicios cargados:', this.services); // Agrega este console.log
-    })
-    .catch((error) => {
-      console.error('Error al cargar los servicios:', error);
-    });
-},
-filterServices() {
-    if (this.selectedFilter === '') {
-      this.filteredServices = this.services; // Muestra todos los servicios si no hay filtro
-    } else {
-      this.filteredServices = this.services.filter(service => service.estado === this.selectedFilter);
-    }
-  },
+      axios.get('http://localhost:8181/servicios')
+        .then((response) => {
+          this.services = response.data;
+          this.filteredServices = this.services;
+          this.updateCardValues();
+          console.log('Servicios cargados:', this.services); // Agrega este console.log
+        })
+        .catch((error) => {
+          console.error('Error al cargar los servicios:', error);
+        });
+    },
+    filterServices() {
+      if (this.selectedFilter === '') {
+        this.filteredServices = this.services; // Muestra todos los servicios si no hay filtro
+      } else {
+        this.filteredServices = this.services.filter(service => service.estado === this.selectedFilter);
+      }
+    },
     // Actualiza los valores de las tarjetas
     updateCardValues() {
       // Actualiza el total de servicios
@@ -255,8 +236,8 @@ filterServices() {
       this.items[3].value = pendientes.length;
     },
 
-     // Método para abrir el diálogo de edición
-     openEditDialog(servicio) {
+    // Método para abrir el diálogo de edición
+    openEditDialog(servicio) {
       this.servicioAEditar = servicio; // Asigna el servicio a editar
       this.showDialogEdit = true; // Abre el cuadro de diálogo de edición
     },
@@ -273,54 +254,66 @@ filterServices() {
   },
 };
 </script>
-  
-  <style scoped>
-  .espacio-borde-cards {
-    padding: 10px;
-  }
-  .espacio-borde-izquierda-form {
-    margin-left: 20px;
-  }
-  .espacio-borde-table {
-    padding-right: 10px;
-    padding-left: 10px;
-    padding-bottom: 10px;
-  }
-  
-  .color-fondo {
-    background-color: #EEEEEE;
-  }
-  
-  /* Clases de fondo para diferentes estados */
-  .bg-green-4 {
-    background-color: green; /* Cambia este color según tus preferencias */
-  }
-  .bg-azulverde-4 {
-    background-color: rgb(62, 193, 162); /* Cambia este color según tus preferencias */
-  }
-  .bg-blue-4 {
-    background-color: blue; /* Cambia este color según tus preferencias */
-  }
-  
-  .bg-yellow-4 {
-    background-color: yellow; /* Cambia este color según tus preferencias */
-  }
-  /* Estilo personalizado para el menú desplegable */
+
+<style scoped>
+.espacio-borde-cards {
+  padding: 10px;
+}
+
+.espacio-borde-izquierda-form {
+  margin-left: 20px;
+}
+
+.espacio-borde-table {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+
+.color-fondo {
+  background-color: #EEEEEE;
+}
+
+/* Clases de fondo para diferentes estados */
+.bg-green-4 {
+  background-color: green;
+  /* Cambia este color según tus preferencias */
+}
+
+.bg-azulverde-4 {
+  background-color: rgb(62, 193, 162);
+  /* Cambia este color según tus preferencias */
+}
+
+.bg-blue-4 {
+  background-color: blue;
+  /* Cambia este color según tus preferencias */
+}
+
+.bg-yellow-4 {
+  background-color: yellow;
+  /* Cambia este color según tus preferencias */
+}
+
+/* Estilo personalizado para el menú desplegable */
 .q-select-filter {
-  width: 220px; /* Ancho personalizado */
-  border: 1px solid #ccc; /* Borde personalizado */
-  border-radius: 4px; /* Bordes redondeados */
-  background-color: #f9f9f9; /* Color de fondo */
+  width: 220px;
+  /* Ancho personalizado */
+  border: 1px solid #ccc;
+  /* Borde personalizado */
+  border-radius: 4px;
+  /* Bordes redondeados */
+  background-color: #f9f9f9;
+  /* Color de fondo */
 }
 
 .q-select-filter .q-field__inner {
-  padding: 6px 10px; /* Espaciado interior */
+  padding: 6px 10px;
+  /* Espaciado interior */
 }
 
 .q-select-filter .q-field__input {
-  font-size: 14px; /* Tamaño de fuente */
+  font-size: 14px;
+  /* Tamaño de fuente */
 }
-
-
-  </style>
-  
+</style>
