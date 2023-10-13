@@ -116,25 +116,25 @@ export default {
   },
   data() {
     return {
-      numUsuarios: 0, // Número total de usuarios
-      numUsuariosActivos: 0, // Número de usuarios activos
-      numUsuariosInactivos: 0, // Número de usuarios inactivos
-      nombreUsuarioReciente: '', // Nombre del último usuario registrado
-      mode: 'list', // Asegúrate de tener esta propiedad
+      numUsuarios: 0,
+      numUsuariosActivos: 0,
+      numUsuariosInactivos: 0,
+      nombreUsuarioReciente: '',
+      mode: 'list',
       showConfirmationDialog: false,
       showDialogCreate: false,
       showDialogEditarProp: false,
-      usuarioAEditar: null, // Almacena el usuario que se va a editar
-      userToDelete: null, // Almacena el usuario que se va a eliminar
-      columns: [ // Define las columnas de la tabla de usuarios
+      usuarioAEditar: null,
+      userToDelete: null,
+      columns: [
         { name: 'userName', align: 'left', label: 'Usuario', field: 'userName', sortable: true },
         { name: 'nombreCompleto', align: 'left', label: 'Nombre Completo', field: 'nombreCompleto', sortable: true },
         { name: 'correo', align: 'left', label: 'Correo Electrónico', field: 'correo', sortable: true },
         { name: 'nombreRol', align: 'left', label: 'Rol', field: 'nombreRol', sortable: true },
-        { name: 'estado', align: 'left', label: 'Estado', field: 'estado', sortable: true, format: (val) => (val === 1 ? 'Activo' : 'No Activo'), },
+        { name: 'activo', align: 'left', label: 'Estado', field: 'estado', sortable: true, format: (val) => (val === 1 ? 'Activo' : 'No Activo') },
         { name: 'edit', align: 'center', label: 'Editar/Borrar', field: 'Editar/Borrar', sortable: false },
       ],
-      users: [], // Agrega esta línea para declarar la propiedad
+      users: [],
       filter,
 
     }
@@ -165,7 +165,7 @@ export default {
           },
           {
             title: 'Usuarios Eliminados',
-            icon: 'delete_sweep',
+            icon: 'no_accounts',
             value: this.numUsuariosInactivos,
             color1: '#c20900',
             color2: '#9d0800',
@@ -183,13 +183,12 @@ export default {
     },
 
     filteredUsers() {
-      // Filtra la lista de usuarios para mostrar solo usuarios "activos" (activo === 1)
       return this.users.filter(user => user.activo === 1);
     },
   },
 
   methods: {
-    // Función asincrónica para obtener el último usuario creado
+    // Función para obtener el último usuario creado
     async getLastCreatedUser() {
       try {
         const response = await axios.get('http://localhost:8181/usuarios/nombreUsuarioReciente');
@@ -202,21 +201,20 @@ export default {
     async getUsers() {
       try {
         const response = await axios.get('http://localhost:8181/usuarios');
-        const responseData = response.data; // Datos recibidos del servidor
+        const responseData = response.data;
 
-        // Depura los datos para verificar su estructura y contenido
-        console.log('Datos recibidos del servidor:', responseData);
+        // Modificar el campo "estado" para mostrar "Activo" o "Inactivo"
+        responseData.forEach(user => {
+          user.estado = user.estado === 1 ? 'Activo' : 'No Activo';
+        });
 
-        // Asigna los datos de usuarios a this.users
         this.users = responseData;
 
-        // Calcula las estadísticas
         this.numUsuarios = this.users.filter(user => user.activo === 1).length;
-        this.numUsuariosActivos = this.users.filter(user => user.estado === 1 && user.activo === 1).length;
+        this.numUsuariosActivos = this.users.filter(user => user.estado === 'Activo' && user.activo === 1).length;
         this.numUsuariosInactivos = this.users.filter(user => user.activo === 0).length;
         await this.getLastCreatedUser();
 
-        console.log(this.users); // Imprime los datos asignados a this.users
       } catch (error) {
         console.error('Error al obtener usuarios:', error);
       }
@@ -230,31 +228,26 @@ export default {
     },
     // Método para mostrar el cuadro de diálogo de confirmación
     showDeleteConfirmationDialog(user) {
-      this.userToDelete = user; // Almacena el usuario que se va a eliminar
-      this.showConfirmationDialog = true; // Muestra el cuadro de diálogo
+      this.userToDelete = user;
+      this.showConfirmationDialog = true;
     },
     // Método para confirmar la eliminación
     async confirmDeletion() {
       try {
-        // Realiza la solicitud HTTP para eliminar el usuario
         await axios.put(`http://localhost:8181/usuarios/borrar/${this.userToDelete.idUsuario}`, {
-          activo: 0, // Cambia el estado a "inactivo"
+          activo: 0,
         });
 
-        // Actualiza la lista de usuarios después de eliminarlo
         await this.getUsers();
 
-        // Oculta el cuadro de diálogo
         this.showConfirmationDialog = false;
 
-        // Muestra un mensaje de éxito
         this.$q.notify({
           type: 'negative',
 
           message: 'Usuario eliminado exitosamente.',
         });
       } catch (error) {
-        // Muestra un mensaje de error en caso de fallo
         console.error('Error al eliminar el usuario:', error);
         this.$q.notify({
           color: 'negative',
@@ -264,18 +257,14 @@ export default {
       }
 
     },
-    // Método para cancelar la eliminación
     cancelDeletion() {
-      // Simplemente oculta el cuadro de diálogo
       this.showConfirmationDialog = false;
     },
 
   },
-  ///////////////////////////////
 
-  ////////////
   mounted() {
-    this.getUsers(); // Llama a la función cuando el componente se monta
+    this.getUsers();
   },
 };
 
@@ -298,6 +287,5 @@ export default {
 
 .color-fondo {
   background-color: #EEEEEE;
-  /* Cambia esto al color que desees */
 }
 </style>
