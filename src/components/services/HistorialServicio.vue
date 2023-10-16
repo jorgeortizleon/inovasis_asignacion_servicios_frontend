@@ -86,7 +86,7 @@
     <!-- Primera columna con título y subtitulo -->
     <div style="flex: 1; padding: 16px;">
       <div class="text-h6">No/ID</div>
-      <div class="text-h7">1355</div>
+      <div class="text-h7">{{ idServicioGen }}</div>
     </div>
 
     <!-- Segunda columna con título y texto -->
@@ -152,7 +152,7 @@
           <q-card-section>
             <div class="text-h6">Observaciones</div>
           </q-card-section>
-          <q-card-section>
+          <q-card-section class="custom-card-section">
             <div v-for="(line, index) in items[5].lines" :key="index" style="font-size: 16px; color: black;">
               <p :title="line">
             {{ line }}
@@ -192,15 +192,15 @@
           </div>
           <!-- segundo card -->
           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <q-card class="my-card no-shadow" bordered style="max-width: 600px;">
+            <q-card class="my-card no-shadow" bordered >
               <q-card-section>
                 <div class="text-h6">
                   Descripcion del servicio
                 </div>
               </q-card-section>
-              <q-card-section style="max-height: 110px; overflow: hidden;">
-                <p title="Texto completo: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras eget metus sit amet velit bibendum tincidunt. Quisque non quam id urna cursus blandit. Nulla facilisi. Morbi quis nunc nec leo facilisis eleifend. Sed eu turpis sit amet libero feugiat eleifend. aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras eget metus sit amet velit bibendum tincidunt. Quisque non quam id urna cursus blandit. Nulla facilisi. Morbi quis nunc nec leo facilisis eleifend. Sed eu turpis sit amet libero feugiat eleifend. aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaa aaaaa aaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaz
+              <q-card-section class="custom-card-section" style="height: 100px; overflow: hidden;">
+                <p :title="this.descripcionServicio">
+                  {{ this.descripcionServicio }}
                 </p>
               </q-card-section>
             </q-card>
@@ -243,12 +243,19 @@
           <q-dialog v-model="mostrarDialogoObservacion" persistent no-backdrop>
           <q-card style="width: 30%; max-height: 70vh;">
             <q-card-section>
-              <q-input
+              <q-input  bottom-slots
                 v-model="nuevaObservacion"
                 label="Nueva Observación"
                 type="textarea"
+                hint="Al agregar una nueva observacion la anterior se eliminara"
                 class="q-ma-none full-width"
-              />
+                counter
+                maxlength="500"
+              >
+              <template v-slot:append>
+                  <q-icon v-if="nuevaObservacion !== ''" name="close" @click="nuevaObservacion = ''" class="cursor-pointer" />
+              </template>
+            </q-input>
             </q-card-section>
             <q-card-actions>
               <q-btn flat label="Cerrar" color="red" @click="cerrarDialogoObservacion"/>
@@ -276,10 +283,15 @@ export default {
 
   data() {
     return {
-      checkbox1: ref(true),
-      checkbox2: ref(true),
+      nuevaObservacion: ref(""),
+      text: ref(''),
+      ph: ref(''),
+      idServicioGen:"",
+      checkbox1: ref(false),
+      checkbox2: ref(false),
       checkbox3: ref(false),
-      checkbox4: ref(true),
+      checkbox4: ref(false),
+      descripcionServicio: '',
       mode: 'list',
       filteredServices: [],
       filter: '',
@@ -373,6 +385,7 @@ export default {
     // Función para cargar los hsitorial de los servicios desde el backend
     loadServices() {
   const idServicio = this.$route.params.id;
+  this.idServicioGen = idServicio
   const apiUrl = `http://localhost:8181/historialServicio?idServicio=${idServicio}`;
 
   axios.get(apiUrl)
@@ -510,6 +523,45 @@ export default {
     .catch((error) => {
       console.error('Error al cargar observación desde el backend:', error);
     });
+
+    // obtiene y asigna el valor de los checkbox. Requisitos
+      const checkboxRequest = `http://localhost:8181/servicios/obtenerCheckboxServicio/${idServicio}`;
+      axios.get(checkboxRequest)
+        .then((response) => {
+          if (response.data.hojaServicio === 1) {
+            this.checkbox1 = true
+          } else {
+            this.checkbox1 = false
+          }
+          if (response.data.factura === 1) {
+            this.checkbox2 = true
+          } else {
+            this.checkbox2 = false
+          }
+          if (response.data.hojaRemision === 1) {
+            this.checkbox3 = true
+          } else {
+            this.checkbox3 = false
+          }
+          if (response.data.empresaPoliza === 1) {
+            this.checkbox4 = true
+          } else {
+            this.checkbox4 = false
+          }
+        })
+        .catch((error) => {
+          console.error('Error al cargar los checkbox desde el backend:', error);
+        });
+
+        // obtiene la descripcion del servicio
+      const descripcionRequest = `http://localhost:8181/servicios/descripcionServicio/${idServicio}`;
+      axios.get(descripcionRequest)
+        .then((response) => {
+          this.descripcionServicio = response.data;
+        })
+        .catch((error) => {
+          console.error('Error al cargar la descripcion desde el backend:', error);
+        });
 },
 
 guardarObservacion() {
@@ -604,5 +656,13 @@ guardarObservacion() {
   .bg-yellow-4 {
     background-color: yellow; /* Cambia este color según tus preferencias */
   }
+
+  .custom-card-section {
+    max-height: 10em; /* Altura máxima de 5 líneas */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* Número máximo de líneas */
+  -webkit-box-orient: vertical;
+}
 
   </style>

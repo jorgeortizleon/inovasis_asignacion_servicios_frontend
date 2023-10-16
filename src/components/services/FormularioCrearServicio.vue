@@ -48,10 +48,15 @@
               hint="Titulo del servicio"
               lazy-rules
               dense
+              counter maxlength="200"
             >
               <template v-slot:prepend>
                 <q-icon name="title" />
               </template>
+              <template v-slot:append>
+          <q-icon v-if="text !== ''" name="close" @click="nuevoServicio.tituloservicio = ''" class="cursor-pointer" />
+          <q-icon name="schedule" />
+        </template>
             </q-input>
           </div>
           <div class="q-gutter-md espacio-borde-izquierda-form">
@@ -63,10 +68,15 @@
               lazy-rules
               :rules="descripcionRules"
               dense
+              counter maxlength="500"
             >
               <template v-slot:prepend>
                 <q-icon name="description" />
               </template>
+              <template v-slot:append>
+          <q-icon v-if="text !== ''" name="close" @click="nuevoServicio.descripcion = ''" class="cursor-pointer" />
+          <q-icon name="schedule" />
+        </template>
             </q-input>
           </div>
           <!-- Nuevos checkboxes: Remisión y Empresa de Póliza -->
@@ -110,12 +120,12 @@
     data() {
       return {
 
-        nuevoServicio: {
+        nuevoServicio: ref({
           razonSocial: '',
           userName: '',
           tituloservicio: '',
           descripcion: '',
-        },
+        }),
         tipoDocumento: [], // Para checkboxes
         razonSocialOptions: [], // Opciones para el selector Razón Social
         usuarioOptions: [], // Opciones para el selector Usuario
@@ -187,10 +197,10 @@
       },
 
       async crearServicio() {
-        try {
+
           // Validar el formulario antes de enviar los datos al servidor
           const isValid = await this.$refs.form.validate();
-
+          // try {
           if (isValid) {
             const useAuth = useAuthStore();
             const idusuario = ref(useAuth.user.idUsuario);
@@ -244,23 +254,23 @@
               this.$q.notify({
                 color: 'negative',
                 icon: 'warning',
-                message: 'No se pudo crear el servicio. Verifique que lleno todos los campos o consulte el desarrollador',
+                message: 'No se pudo crear el servicio. Verifique que lleno todos los campos o consulte el desarrolladoz',
               });
             }
               });
           });;
             console.log('Respuesta del servidor:', response.status);
           }
-        } catch (error) {
-          // Manejo de errores
-          console.error('Error al crear el servicio:', error);
-          // Muestra un mensaje de error en caso de error
-          this.$q.notify({
-            color: 'negative',
-            icon: 'warning',
-            message: 'Se produjo un error al crear el servicio. Verifique que se lleno todos los campos o consulte a los desarrolladores',
-          });
-        }
+        // } catch (error) {
+        //   // Manejo de errores
+        //   console.error('Error al crear el servicio:', error);
+        //   // Muestra un mensaje de error en caso de error
+        //   this.$q.notify({
+        //     color: 'negative',
+        //     icon: 'warning',
+        //     message: 'Se produjo un error al crear el servicio. Verifique que se lleno todos los campos o consulte a los desarrolladores',
+        //   });
+        // }
       },
 
       resetForm() {

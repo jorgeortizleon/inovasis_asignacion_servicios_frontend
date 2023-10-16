@@ -76,7 +76,7 @@
             map-options
             dense
             v-model="estado"
-            :options="estados" 
+            :options="estados"
             class="campo-ancho"
           >
             <template v-slot:prepend>
@@ -89,16 +89,20 @@
             label="Descripción cambio"
             dense
             class="campo-ancho"
-            v-model="solucion" 
+            v-model="solucion"
+            counter maxlength="500"
           >
             <template v-slot:prepend>
               <q-icon name="done" />
             </template>
+            <template v-slot:append>
+          <q-icon name="close" @click="solucion = ''" class="cursor-pointer" />
+        </template>
           </q-input>
         </div>
       </q-form>
     </q-card-section>
-    
+
     <!-- Factura -->
     <q-checkbox
       label="Factura"
@@ -161,7 +165,7 @@ export default {
       hojaServicio: 0, // Debes asignar el valor correcto según tu lógica
       hojaRemision: 0, // Debes asignar el valor correcto según tu lógica
       empresaPoliza: 0, // Debes asignar el valor correcto según tu lógica
-      codigoServicio: '', 
+      codigoServicio: '',
       estado: 1,
       fecha: '',
       descripcion:'',
@@ -170,7 +174,7 @@ export default {
       tituloservicio: '',
       usuarioAsignado: '',
       usuarioCreado: '',
-      solucion: '', // Agrega la propiedad para rastrear la solución
+      solucion: ref(''), // Agrega la propiedad para rastrear la solución
         estados: [
       { label: 'Pendiente', value: 2 },
       { label: 'En Proceso', value: 3 },
@@ -248,7 +252,7 @@ watch: {
       });
       return; // Evitar el envío de la solicitud si el campo está vacío
     }
-          
+
           if (isValid) {
 
       const useAuth = useAuthStore();
@@ -293,7 +297,7 @@ watch: {
           });
         }
       },
-      
+
     },
   };
 </script>
