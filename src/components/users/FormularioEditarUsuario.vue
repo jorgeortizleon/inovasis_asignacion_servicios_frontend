@@ -7,35 +7,45 @@
       <q-form ref="form" @submit.prevent="editarUsuario" @reset="resetForm" class="q-gutter-md">
         <div class="q-gutter-md espacio-borde-izquierda-form">
           <q-input filled v-model="usuario" label="Nombre de Usuario" hint="Introduzca el nombre de usuario" lazy-rules
-            :rules="usuarioRules">
+            :rules="usuarioRules" counter maxlength="50">
             <template v-slot:prepend>
               <q-icon name="account_circle" />
+            </template>
+            <template v-slot:append>
+              <q-icon v-if="text !== ''" name="close" @click="usuario = ''" class="cursor-pointer" />
             </template>
           </q-input>
         </div>
         <div class="q-gutter-md espacio-borde-izquierda-form">
           <q-input filled v-model="nombreCompleto" label="Nombre Completo" hint="Introduzca el nombre completo" lazy-rules
-            :rules="nombreCompletoRules">
+            :rules="nombreCompletoRules" counter maxlength="50">
             <template v-slot:prepend>
               <q-icon name="badge" />
+            </template>
+            <template v-slot:append>
+              <q-icon v-if="text !== ''" name="close" @click="nombreCompleto = ''" class="cursor-pointer" />
             </template>
           </q-input>
         </div>
         <div class="q-gutter-md espacio-borde-izquierda-form">
           <q-input filled v-model="correo" label="Correo Electrónico" hint="Introduzca el correo electrónico" lazy-rules
-            :rules="correoRules">
+            :rules="correoRules" counter maxlength="50">
             <template v-slot:prepend>
               <q-icon name="mail" />
+            </template>
+            <template v-slot:append>
+              <q-icon v-if="text !== ''" name="close" @click="correo = ''" class="cursor-pointer" />
             </template>
           </q-input>
         </div>
         <div class="q-gutter-md espacio-borde-izquierda-form">
           <q-input filled v-model="contrasena" label="Contraseña" hint="Introduzca la contraseña" lazy-rules
-            :rules="contrasenaRules" :type="showPassword ? 'text' : 'password'">
+            :rules="contrasenaRules" :type="showPassword ? 'text' : 'password'" counter maxlength="50">
             <template v-slot:prepend>
               <q-icon name="lock" />
             </template>
             <template v-slot:append>
+              <q-icon v-if="text !== ''" name="close" @click="contrasena = ''" class="cursor-pointer" />
               <q-icon :name="showPassword ? 'visibility_off' : 'visibility'" @click="showPassword = !showPassword"
                 class="cursor-pointer" />
             </template>
@@ -43,11 +53,13 @@
         </div>
         <div class="q-gutter-md espacio-borde-izquierda-form">
           <q-input filled v-model="confirmarContrasena" label="Confirmar Contraseña" hint="Confirme la contraseña"
-            lazy-rules :rules="confirmarContrasenaRules" :type="showConfirmPassword ? 'text' : 'password'">
+            lazy-rules :rules="confirmarContrasenaRules" :type="showConfirmPassword ? 'text' : 'password'" counter
+            maxlength="50">
             <template v-slot:prepend>
               <q-icon name="lock" />
             </template>
             <template v-slot:append>
+              <q-icon v-if="text !== ''" name="close" @click="confirmarContrasena = ''" class="cursor-pointer" />
               <q-icon :name="showConfirmPassword ? 'visibility_off' : 'visibility'"
                 @click="showConfirmPassword = !showConfirmPassword" class="cursor-pointer" />
             </template>
