@@ -59,7 +59,7 @@
               row-key="idRol" :filter="filter" :rows-per-page-options="[10000]" no-data-label="No hay roles"
               no-results-label="No se encuentra un rol que coincida">
               <template v-slot:top-right="props">
-                <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
+                <q-input outlined borderless dense debounce="300" v-model="filter" placeholder="Buscar">
                   <template v-slot:append>
                     <q-icon name="search" />
                   </template>
@@ -92,10 +92,13 @@
         <q-card-section class="q-pt-none">
           <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
             <div class="q-gutter-md espacio-borde-izquierda-form">
-              <q-input filled v-model="nombreRolNuevo" label="Nombre" hint="Introduzca el nombre de su rol nuevo"
-                lazy-rules :rules="[val => val && val.length > 0 || 'Este campo no puede estar vacío.']">
+              <q-input filled v-model="nombreRolNuevo" label="Nombre" hint="Introduzca el nombre de su rol nuevo" counter
+                maxlength="50" lazy-rules :rules="[val => val && val.length > 0 || 'Este campo no puede estar vacío.']">
                 <template v-slot:prepend>
                   <q-icon name="supervisor_account" />
+                </template>
+                <template v-slot:append>
+                  <q-icon v-if="text !== ''" name="close" @click="nombreRolNuevo = ''" class="cursor-pointer" />
                 </template>
               </q-input>
             </div>
@@ -153,7 +156,8 @@
         <q-card-actions>
           <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
           <q-space></q-space>
-          <q-btn flat label="Crear" icon-right="add_circle" color="green" @click="botonCrearRol()" :disable="disableBtn()" />
+          <q-btn flat label="Crear" icon-right="add_circle" color="green" @click="botonCrearRol()"
+            :disable="disableBtn()" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -583,7 +587,7 @@ export default {
     },
 
     disableBtn() {
-      if (this.nombreRolNuevo !== '' ) {
+      if (this.nombreRolNuevo !== '') {
         return false;
       } else {
         return true;

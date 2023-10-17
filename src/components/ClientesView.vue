@@ -31,11 +31,12 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <q-card class="text-grey-8 no-shadow" bordered>
           <q-card-section class="q-pa-none">
-            <q-table :dense="$q.screen.lt.md" class="no-shadow" :rows="rows" title="Clientes" :hide-header="mode === 'grid'" :columns="columns"
-              row-key="idCliente" :filter="filter" :rows-per-page-options="[10000]" no-data-label="No hay clientes"
+            <q-table :dense="$q.screen.lt.md" class="no-shadow" :rows="rows" title="Clientes"
+              :hide-header="mode === 'grid'" :columns="columns" row-key="idCliente" :filter="filter"
+              :rows-per-page-options="[10000]" no-data-label="No hay clientes"
               no-results-label="No se encuentra un cliente que coincida">
               <template v-slot:top-right="props">
-                <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
+                <q-input outlined borderless dense debounce="300" v-model="filter" placeholder="Buscar">
                   <template v-slot:append>
                     <q-icon name="search" />
                   </template>
@@ -69,26 +70,35 @@
         <q-card-section class="q-pt-none">
           <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
             <div class="q-gutter-md espacio-borde-izquierda-form">
-              <q-input filled v-model="codigo" label="Código" hint="Introduzca el código" lazy-rules
-                :rules="[val => val && val.length > 0 || 'Este campo no puede estar vacío.']">
+              <q-input filled v-model="codigo" label="Código" hint="Introduzca el código" lazy-rules counter
+                maxlength="50" :rules="[val => val && val.length > 0 || 'Este campo no puede estar vacío.']">
                 <template v-slot:prepend>
                   <q-icon name="text_snippet" />
+                </template>
+                <template v-slot:append>
+                  <q-icon v-if="text !== ''" name="close" @click="codigo = ''" class="cursor-pointer" />
                 </template>
               </q-input>
             </div>
             <div class="q-gutter-md espacio-borde-izquierda-form">
               <q-input filled v-model="razonSocial" label="Razón Social" hint="Introduzca la razón social" lazy-rules
-                :rules="[noVacio, soloMayusculasSinAcentos]">
+                counter maxlength="50" :rules="[noVacio, soloMayusculasSinAcentos]">
                 <template v-slot:prepend>
                   <q-icon name="business" />
+                </template>
+                <template v-slot:append>
+                  <q-icon v-if="text !== ''" name="close" @click="razonSocial = ''" class="cursor-pointer" />
                 </template>
               </q-input>
             </div>
             <div class="q-gutter-md espacio-borde-izquierda-form">
-              <q-input filled v-model="correo" label="Correo" hint="Introduzca el correo" lazy-rules
-                :rules="[noVacio, formatoCorreoValido]">
+              <q-input filled v-model="correo" label="Correo" hint="Introduzca el correo" lazy-rules counter
+                maxlength="50" :rules="[noVacio, formatoCorreoValido]">
                 <template v-slot:prepend>
                   <q-icon name="mail" />
+                </template>
+                <template v-slot:append>
+                  <q-icon v-if="text !== ''" name="close" @click="correo = ''" class="cursor-pointer" />
                 </template>
               </q-input>
             </div>
@@ -98,6 +108,9 @@
                   :rules="[noVacio, formatoNumeroValido]">
                   <template v-slot:prepend>
                     <q-icon name="call" />
+                  </template>
+                  <template v-slot:append>
+                    <q-icon v-if="text !== ''" name="close" @click="telefono = ''" class="cursor-pointer" />
                   </template>
                 </q-input>
               </div>
@@ -130,26 +143,35 @@
         <q-card-section class="q-pt-none">
           <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
             <div class="q-gutter-md espacio-borde-izquierda-form">
-              <q-input filled v-model="codigo" label="Código" hint="Introduzca el código" lazy-rules
-                :rules="[val => val && val.length > 0 || 'Por favor escriba algo']">
+              <q-input filled v-model="codigo" label="Código" hint="Introduzca el código" lazy-rules counter
+                maxlength="50" :rules="[val => val && val.length > 0 || 'Por favor escriba algo']">
                 <template v-slot:prepend>
                   <q-icon name="text_snippet" />
+                </template>
+                <template v-slot:append>
+                  <q-icon v-if="text !== ''" name="close" @click="codigo = ''" class="cursor-pointer" />
                 </template>
               </q-input>
             </div>
             <div class="q-gutter-md espacio-borde-izquierda-form">
               <q-input filled v-model="razonSocial" label="Razón Social" hint="Introduzca la razón social" lazy-rules
-                :rules="[noVacio, soloMayusculasSinAcentos]">
+                counter maxlength="50" :rules="[noVacio, soloMayusculasSinAcentos]">
                 <template v-slot:prepend>
                   <q-icon name="business" />
+                </template>
+                <template v-slot:append>
+                  <q-icon v-if="text !== ''" name="close" @click="razonSocial = ''" class="cursor-pointer" />
                 </template>
               </q-input>
             </div>
             <div class="q-gutter-md espacio-borde-izquierda-form">
-              <q-input filled v-model="correo" label="Correo" hint="Introduzca el correo" lazy-rules
-                :rules="[noVacio, formatoCorreoValido]">
+              <q-input filled v-model="correo" label="Correo" hint="Introduzca el correo" lazy-rules counter
+                maxlength="50" :rules="[noVacio, formatoCorreoValido]">
                 <template v-slot:prepend>
                   <q-icon name="mail" />
+                </template>
+                <template v-slot:append>
+                  <q-icon v-if="text !== ''" name="close" @click="correo = ''" class="cursor-pointer" />
                 </template>
               </q-input>
             </div>
@@ -159,6 +181,9 @@
                   :rules="[noVacio, formatoNumeroValido]">
                   <template v-slot:prepend>
                     <q-icon name="call" />
+                  </template>
+                  <template v-slot:append>
+                    <q-icon v-if="text !== ''" name="close" @click="telefono = ''" class="cursor-pointer" />
                   </template>
                 </q-input>
               </div>

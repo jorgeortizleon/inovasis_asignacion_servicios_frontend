@@ -55,7 +55,6 @@
               </template>
               <template v-slot:append>
           <q-icon v-if="text !== ''" name="close" @click="nuevoServicio.tituloservicio = ''" class="cursor-pointer" />
-          <q-icon name="schedule" />
         </template>
             </q-input>
           </div>
@@ -75,7 +74,6 @@
               </template>
               <template v-slot:append>
           <q-icon v-if="text !== ''" name="close" @click="nuevoServicio.descripcion = ''" class="cursor-pointer" />
-          <q-icon name="schedule" />
         </template>
             </q-input>
           </div>

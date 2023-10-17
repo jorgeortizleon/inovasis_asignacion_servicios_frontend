@@ -34,7 +34,7 @@
               :hide-header="mode === 'grid'" :rows-per-page-options="[10000]" row-key="idUsuario" :filter="filter"
               no-data-label="No hay usuarios" no-results-label="No se encuentra un usuario que coincida">
               <template v-slot:top-right="props">
-                <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
+                <q-input outlined borderless dense debounce="300" v-model="filter" placeholder="Buscar">
                   <template v-slot:append>
                     <q-icon name="search" />
                   </template>
