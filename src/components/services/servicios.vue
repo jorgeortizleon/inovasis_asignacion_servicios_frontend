@@ -31,15 +31,16 @@
         <q-card class="text-grey-8 no-shadow" bordered>
           <q-card-section class="q-pa-none">
             <q-table ref="myTable" class="no-shadow" :rows="filteredServices" :columns="columns" title="Servicios"
-              :hide-header="mode === 'grid'" :rows-per-page-options="[10000]" row-key="idServicio" :filter="filter" no-data-label="No hay Servicios" no-results-label="No se encuentra un servicio que coincida">
+              :hide-header="mode === 'grid'" :rows-per-page-options="[10000]" row-key="idServicio" :filter="filter"
+              no-data-label="No hay Servicios" no-results-label="No se encuentra un servicio que coincida">
 
               <template v-slot:top-right="props">
                 <div class="q-mr-md">
                   <!-- Agregar menú desplegable para seleccionar el filtro -->
-                  <q-select v-model="selectedFilterModel" :options="filterOptions" label="Ver" emit-value map-options
-                    dense class="q-select-filter" />
+                  <q-select v-model="selectedFilterModel" :options="filterOptions" label="Filtrar" emit-value map-options
+                    dense outlined class="q-select-filter" />
                 </div>
-                <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
+                <q-input borderless dense outlined debounce="300" v-model="filter" placeholder="Buscar">
                   <template v-slot:append>
                     <q-icon name="search" />
                   </template>
@@ -297,11 +298,9 @@ export default {
 
 /* Estilo personalizado para el menú desplegable */
 .q-select-filter {
-  width: 220px;
+  width: 160px;
   /* Ancho personalizado */
-  border: 1px solid #ccc;
-  /* Borde personalizado */
-  border-radius: 4px;
+
   /* Bordes redondeados */
   background-color: #f9f9f9;
   /* Color de fondo */
