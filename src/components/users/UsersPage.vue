@@ -61,6 +61,13 @@
                   </template>
                 </q-td>
               </template>
+              <template v-slot:body-cell-activo="props2">
+                <q-td :props2="props2">
+                  <div>
+                    <q-badge :color="props2.value === 'Activo' ? 'green' : 'negative'" :label="props2.value" />
+                  </div>
+                </q-td>
+              </template>
             </q-table>
           </q-card-section>
         </q-card>
@@ -131,7 +138,7 @@ export default {
         { name: 'nombreCompleto', align: 'left', label: 'Nombre Completo', field: 'nombreCompleto', sortable: true },
         { name: 'correo', align: 'left', label: 'Correo Electrónico', field: 'correo', sortable: true },
         { name: 'nombreRol', align: 'left', label: 'Rol', field: 'nombreRol', sortable: true },
-        { name: 'activo', align: 'left', label: 'Estado', field: 'estado', sortable: true, format: (val) => (val === 1 ? 'Activo' : 'No Activo') },
+        { name: 'activo', align: 'left', label: 'Estado', field: 'estado', sortable: true},
         { name: 'edit', align: 'center', label: 'Editar/Borrar', field: 'Editar/Borrar', sortable: false },
       ],
       users: [],

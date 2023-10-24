@@ -54,6 +54,10 @@ const routes = [
         path: "/servicios",
         component: () => import("components/services/servicios.vue"),
       },
+      {
+        path: "/requisitos",
+        component: () => import("components/RequisitosView.vue"),
+      },
       // { path: '/servicioshistory', component: () => import('components/services/ServiceHistory.vue')},
       {
         path: "/historial-servicio/:id",

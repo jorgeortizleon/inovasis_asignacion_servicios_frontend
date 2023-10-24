@@ -35,6 +35,13 @@
               :hide-header="mode === 'grid'" :columns="columns" row-key="idCliente" :filter="filter"
               :rows-per-page-options="[10000]" no-data-label="No hay clientes"
               no-results-label="No se encuentra un cliente que coincida">
+              <template v-slot:body-cell-estado="props">
+                <q-td :props="props">
+                  <div>
+                    <q-badge :color="props.value === 'Activo' ? 'green' : 'negative'" :label="props.value" />
+                  </div>
+                </q-td>
+              </template>
               <template v-slot:top-right="props">
                 <q-input outlined borderless dense debounce="300" v-model="filter" placeholder="Buscar">
                   <template v-slot:append>
@@ -258,7 +265,7 @@ const columns = [
   { name: 'idCliente', align: 'left', label: 'ID', field: 'idCliente', sortable: true },
   { name: 'codigo', align: 'left', label: 'Codigo', field: 'codigo', sortable: true },
   {
-    name: 'desc',
+    name: 'razonSocial',
     required: true,
     label: 'Razon social',
     align: 'left',
@@ -266,14 +273,14 @@ const columns = [
     sortable: true
   },
   {
-    name: 'date',
+    name: 'correo',
     align: 'left',
     label: 'Correo',
     field: 'correo',
     sortable: true,
   },
   {
-    name: 'desc',
+    name: 'telefono',
     required: true,
     label: 'Telefono',
     align: 'left',
@@ -281,8 +288,8 @@ const columns = [
     sortable: true
   },
   {
-    name: 'date',
-    align: 'left',
+    name: 'estado',
+    align: 'center',
     label: 'Estado',
     field: 'estado',
     sortable: true,
@@ -292,7 +299,7 @@ const columns = [
     name: 'actions',
     field: 'actions',
     label: 'Editar/Borrar',
-    lign: 'center',
+    align: 'center',
   },
 ];
 
