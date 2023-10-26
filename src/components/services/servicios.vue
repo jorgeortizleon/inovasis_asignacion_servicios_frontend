@@ -100,7 +100,7 @@
 
 <script>
 
-import { ref, } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
 import FormularioCrearServicio from './FormularioCrearServicio.vue';
 import FormularioEditarServicio from './FormularioEditarServicio.vue';
@@ -115,6 +115,7 @@ export default {
 
   data() {
     return {
+      date: ref(null),
       mode: 'list',
       showDialogCreate: false,
       filteredServices: [],

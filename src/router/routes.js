@@ -38,28 +38,34 @@ const routes = [
       {
         path: "",
         name: "home",
+        meta: { title: 'Asignación de servicios' },
         component: () => import("pages/IndexPage.vue"),
       },
       // { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: "/about", component: () => import("components/About.vue") },
+      { path: "/about", meta: { title: 'Acerca de esta pagina' }, component: () => import("components/About.vue") },
       {
         path: "/users",
+        meta: { title: 'Usuarios' },
         component: () => import("components/users/UsersPage.vue"),
       },
       {
         path: "/clientes",
+        meta: { title: 'Clientes' },
         component: () => import("components/ClientesView.vue"),
       },
       {
         path: "/servicios",
+        meta: { title: 'Servicios' },
         component: () => import("components/services/servicios.vue"),
       },
       {
         path: "/requisitos",
+        meta: { title: 'Facturas' },
         component: () => import("components/RequisitosView.vue"),
       },
       // { path: '/servicioshistory', component: () => import('components/services/ServiceHistory.vue')},
       {
+        meta: { title: 'Información de un servicio' },
         path: "/historial-servicio/:id",
         name: "historial-servicio",
         component: HistorialServicio,
@@ -69,12 +75,13 @@ const routes = [
       // { path: '/servicioshistory', component: () => import('components/PRUEBA/ServiceHistory.vue')},
       {
         path: "/configuracion",
+        meta: { title: 'Configuracion' },
         component: () => import("components/ConfiguracionView.vue"),
       },
     ],
   },
   { path: "/login", component: () => import("components/auth/LoginForm.vue") },
-  { path: "/about", component: () => import("components/About.vue") },
+  { path: "/about",component: () => import("components/About.vue") },
 
   {
     path: "/:catchAll(.*)*",

@@ -194,16 +194,20 @@
           <div class="col-4">
             <q-toolbar>
               <q-toolbar-title class="text-h6">Observaciones</q-toolbar-title>
-              <q-btn  color="primary" @click="showDialogObservaciones = true" label="Ver más"></q-btn>
+              <q-btn color="primary" @click="openObservacionesDialog()" label="Ver más"><q-badge color="red" rounded
+                  floating v-if="observacionesNoVitso > 0">{{ observacionesNoVitso }}</q-badge></q-btn>
             </q-toolbar>
             <div v-if="observaciones.length > 0">
               <div v-for="(observacion, index) in observaciones" :key="index">
                 <div v-if="index < 2" class="espacio-cards-observaciones">
-                  <q-card class="my-card q-py-sm " style="height: 87px; overflow: hidden; border-radius: 10px;">
+                  <q-card class="my-card q-py-sm "
+                    style="height: 87px; overflow: hidden; border-radius: 10px; position: relative;">
                     <q-item>
                       <q-item-section>
                         <q-item-label class="text-caption text-grey">{{ reformatDateAndTime(observacion.fechaRegistro)
                         }}</q-item-label>
+                        <q-badge rounded color="red" floating v-if="observacion.visto === 0"
+                          style="position: absolute; z-index: 9999; right: 4px;" />
                         <p :title="observacion.observacion">
                           <strong>{{ observacion.nombreCompleto }}:</strong> {{ observacion.observacion }}
                         </p>
@@ -368,7 +372,7 @@
     </q-dialog>
 
     <!-- dialogo para ver todas las observaciones -->
-    <q-dialog v-model="showDialogObservaciones">
+    <q-dialog v-model="showDialogObservaciones" persistent>
       <q-card class="q-dialog color-fondo" style="width: 500px;">
         <q-card-section>
           <div class="text-h6">Observaciones</div>
@@ -382,6 +386,8 @@
                     <q-item-section>
                       <q-item-label class="text-caption text-grey">{{ reformatDateAndTime(observacion.fechaRegistro)
                       }}</q-item-label>
+                      <q-badge rounded color="red" floating v-if="observacion.visto === 0"
+                        style="position: absolute; z-index: 9999; right: 4px;" />
                       <p :title="observacion.observacion">
                         <strong>{{ observacion.nombreCompleto }}:</strong> {{ observacion.observacion }}
                       </p>
@@ -396,7 +402,7 @@
           </div>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="red" @click="showDialogObservaciones = false" />
+          <q-btn flat label="Cerrar" color="red" @click="closeObservacionesDialog()" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -409,6 +415,7 @@
 import { ref, } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from "src/stores/auth";
+import FormularioEditarUsuario from '../users/FormularioEditarUsuario.vue';
 
 
 export default {
@@ -420,6 +427,7 @@ export default {
 
   data() {
     return {
+      observacionesNoVitso: ref(''),
       observaciones: ref([]),
       useAuth: useAuthStore(),
       showDialogRequisitos: ref(false),
@@ -561,6 +569,15 @@ export default {
         })
         .catch((error) => {
           console.error('Error al cargar los servicios:', error);
+        });
+
+
+      const apiUrl2 = `http://localhost:8181/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
+      axios.get(apiUrl2).then((response) => {
+        this.observacionesNoVitso = response.data;
+      })
+        .catch((error) => {
+          console.error('Error al cargar las observaciones no vistas:', error);
         });
     },
     // Función para cargar los detalles de un servicio específico
@@ -906,6 +923,48 @@ export default {
       const formattedDate = `${day} de ${monthName} del ${year}`;
       const formattedTime = `${hour}:${minute}`;
       return `${formattedDate} a las ${formattedTime}`;
+    },
+
+    openObservacionesDialog() {
+      const idServicio = this.$route.params.id;
+      const usuarioAsignado = this.useAuth.user.userName
+      this.showDialogObservaciones = true
+      if (usuarioAsignado === this.servicioDetails.usuarioAsignado) {
+        axios.put(`http://localhost:8181/observaciones/observacionVisto?IdServicio=${idServicio}`)
+
+      // Actualizar el numero de los no visto del badge del boton
+      const apiUrl1 = `http://localhost:8181/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
+      axios.get(apiUrl1).then((response) => {
+        this.observacionesNoVitso = response.data;
+      })
+
+      // obtner observaciones 2
+      const apiUrl2 = `http://localhost:8181/observaciones?id=${idServicio}`;
+      axios.get(apiUrl2)
+        .then((response) => {
+          this.observaciones = response.data;
+        })
+      }
+    },
+
+    closeObservacionesDialog() {
+      const idServicio = this.$route.params.id;
+      const usuarioAsignado = this.useAuth.user.userName
+      if (usuarioAsignado === this.servicioDetails.usuarioAsignado) {
+        // Actualizar el numero de los no visto del badge del boton
+        const apiUrl1 = `http://localhost:8181/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
+        axios.get(apiUrl1).then((response) => {
+        this.observacionesNoVitso = response.data;
+        })
+
+        // obtner observaciones 2
+        const apiUrl2 = `http://localhost:8181/observaciones?id=${idServicio}`;
+        axios.get(apiUrl2)
+          .then((response) => {
+            this.observaciones = response.data;
+          })
+      }
+      this.showDialogObservaciones = false
     },
 
   },

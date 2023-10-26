@@ -5,17 +5,53 @@
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-btn flat dense round aria-label="Clientes" to="/home">
-          <img
-          src="~assets/logoOnlyInovasis.png"
-            alt="Clientes" class="custom-image" />
+          <img src="~assets/logoOnlyInovasis.png" alt="Clientes" class="custom-image" />
         </q-btn>
 
         <q-toolbar-title>
-          Asignación de servicios
+          {{ pageTitle }}
         </q-toolbar-title>
 
         <q-space />
-        <div>Usuario: {{ this.puesto }}</div>
+
+        <q-btn-dropdown flat dropdown-icon="account_circle" :label="this.userIniciado.userName">
+          <q-card class="no-shadow" bordered>
+            <q-card-section class="text-center">
+              <!-- <q-avatar size="100px" class="shadow-10">
+                <img :src="avatar">
+              </q-avatar> -->
+              <q-avatar size="100px" class="shadow-10" color="blue" text-color="white">
+                {{ capitalizarPrimeraLetra(this.userIniciado.userName) }}
+              </q-avatar>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none text-center ">
+              <div class="text-h6  text-grey-8">
+                {{ this.userIniciado.userName }}
+              </div>
+              <div class="text-caption text-grey-8">
+                {{ this.userIniciado.nombreCompleto }}
+              </div>
+              <div class="text-caption text-grey-8">
+                {{ this.userIniciado.nombreRol }}
+              </div>
+              <div class="text-caption text-grey-8">
+                {{ this.userIniciado.correo }}
+              </div>
+              <div class="text-caption text-grey-8">
+                {{ reformatDateAndTime(this.userIniciado.fechaRegistro) }}
+              </div>
+            </q-card-section>
+
+            <q-card-actions align="center">
+              <q-btn flat round icon="fab fa-facebook" class="bg-indigo-5 text-white" />
+              <q-btn flat round icon="fab fa-twitter" class="bg-info text-white" />
+              <q-btn flat round icon="fab fa-instagram" class="bg-indigo-9 text-white" />
+            </q-card-actions>
+          </q-card>
+        </q-btn-dropdown>
+
+        <!-- <div>Usuario: {{ this.puesto }}</div> -->
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
             @click="$q.fullscreen.toggle()" v-if="$q.screen.gt.sm">
@@ -128,6 +164,13 @@ const useAuth = useAuthStore();
 export default defineComponent({
   name: 'MainLayout',
 
+  computed: {
+    pageTitle() {
+      const matchedRoute = this.$route.matched.slice().reverse().find(route => route.meta && route.meta.title);
+      return matchedRoute ? matchedRoute.meta.title : 'Asignación de servicios';
+    }
+  },
+
   components: {
 
   },
@@ -199,7 +242,6 @@ export default defineComponent({
       }
     });
 
-
   },
 
 
@@ -212,12 +254,33 @@ export default defineComponent({
       // Add your logout logic here
     },
 
+    reformatDateAndTime(dateTime) {
+      const [date, time] = dateTime.split(' ');
+      const [year, month, day] = date.split('-');
+      const [hour, minute] = time.split(':');
+      const months = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+      ];
+      const monthName = months[parseInt(month) - 1];
+      const formattedDate = `${day} de ${monthName} del ${year}`;
+      const formattedTime = `${hour}:${minute}`;
+      return `${formattedDate} `;
+    },
+
+    capitalizarPrimeraLetra(texto) {
+      if (typeof texto !== 'string' || texto.length === 0) {
+        return Na;
+      }
+      return texto.charAt(0).toUpperCase();
+    }
   },
 
   setup() {
     const leftDrawerOpen = ref(false)
     const puesto = ref(useAuth.user.nombreCompleto);
     const idRol = ref(useAuth.user.idRol);
+    const userIniciado = ref(useAuth.user);
     const permisoUsuarios = ref(true);
     const permisoServicios = ref(true);
     const permisoClientes = ref(true);
@@ -236,6 +299,7 @@ export default defineComponent({
       permisoReportes,
       permisoConfig,
       permisoAcercade,
+      userIniciado,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
@@ -251,7 +315,9 @@ export default defineComponent({
 }
 
 .custom-image {
-  max-height: 30px; /* Define el alto máximo que desees para la imagen */
-  width: auto; /* Permite que el ancho se ajuste automáticamente para mantener la relación de aspecto */
+  max-height: 30px;
+  /* Define el alto máximo que desees para la imagen */
+  width: auto;
+  /* Permite que el ancho se ajuste automáticamente para mantener la relación de aspecto */
 }
 </style>
