@@ -11,9 +11,19 @@
         <q-toolbar-title>
           {{ pageTitle }}
         </q-toolbar-title>
+        <web-socket></web-socket>
 
         <q-space />
-
+        <q-btn round dense flat color="white" icon="notifications">
+          <q-badge color="red" text-color="white" floating>
+            {{ badgeCount }}
+          </q-badge>
+          <q-menu>
+            <q-list style="min-width: 100px">
+              <messages-panel :notifications="notifications" @notification-click="navigateToService"></messages-panel>
+            </q-list>
+          </q-menu>
+        </q-btn>
         <q-btn-dropdown flat dropdown-icon="account_circle" :label="this.userIniciado.userName">
           <q-card class="no-shadow" bordered>
             <q-card-section class="text-center">
@@ -52,6 +62,8 @@
         </q-btn-dropdown>
 
         <!-- <div>Usuario: {{ this.puesto }}</div> -->
+
+        <div>Usuario: {{ this.puesto }}</div>
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
             @click="$q.fullscreen.toggle()" v-if="$q.screen.gt.sm">
@@ -101,7 +113,7 @@
 
 
         <q-item to="/requisitos" active-class="q-item-no-link-highlighting my-menu-link" v-ripple
-          :disable="this.permisoClientes">
+          :disable="this.permisoFacturas">
           <q-item-section avatar>
             <q-icon name="groups_2" />
           </q-item-section>
@@ -158,6 +170,8 @@
 import { defineComponent, ref } from 'vue'
 import { useAuthStore } from "src/stores/auth";
 import axios from "axios";
+import MessagesPanel from './MessagesPanel.vue' // Importa MessagesPanel
+
 
 const useAuth = useAuthStore();
 
@@ -172,9 +186,11 @@ export default defineComponent({
   },
 
   components: {
-
+    MessagesPanel,
   },
+
   created() {
+
 
     axios.get("http://localhost:8181/permisos/menuUsuarios/" + this.idRol).then((resultado) => {
       if (resultado.data === 1) {
@@ -246,6 +262,9 @@ export default defineComponent({
 
 
   methods: {
+    navigateToService(serviceId) {
+      this.$router.push(`/historial-servicio/${serviceId}`);
+    },
     cerrarSesion() {
       // Your logout/logout logic here
       // For example, you can redirect the user to the login page
@@ -253,7 +272,16 @@ export default defineComponent({
       console.log("Cerrando sesión...");
       // Add your logout logic here
     },
-
+    obtenerCantidadNotificaciones() {
+      const userId = this.userIniciado.idUsuario;
+      axios.get(`http://localhost:8181/servicios/notificaciones/${userId}`)
+        .then((response) => {
+          this.badgeCount = response.data.length;
+        })
+        .catch((error) => {
+          console.error('Error al obtener la cantidad de notificaciones', error);
+        });
+    },
     reformatDateAndTime(dateTime) {
       const [date, time] = dateTime.split(' ');
       const [year, month, day] = date.split('-');
@@ -275,8 +303,12 @@ export default defineComponent({
       return texto.charAt(0).toUpperCase();
     }
   },
+  mounted() {
+    this.obtenerCantidadNotificaciones();
+  },
 
   setup() {
+
     const leftDrawerOpen = ref(false)
     const puesto = ref(useAuth.user.nombreCompleto);
     const idRol = ref(useAuth.user.idRol);
@@ -287,7 +319,11 @@ export default defineComponent({
     const permisoReportes = ref(true);
     const permisoConfig = ref(true);
     const permisoAcercade = ref(true);
+    const badgeCount = ref(0); // Variable para almacenar la cantidad de notificaciones
+    const updateBadgeCount = (count) => {
+      badgeCount.value = count;
 
+    };
     return {
 
       leftDrawerOpen,
@@ -298,13 +334,15 @@ export default defineComponent({
       permisoClientes,
       permisoReportes,
       permisoConfig,
+      badgeCount,
+      updateBadgeCount,
       permisoAcercade,
       userIniciado,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
     }
-  }
+  },
 })
 </script>
 
@@ -321,3 +359,4 @@ export default defineComponent({
   /* Permite que el ancho se ajuste automáticamente para mantener la relación de aspecto */
 }
 </style>
+<style scoped></style>

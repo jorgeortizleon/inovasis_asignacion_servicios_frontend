@@ -932,18 +932,18 @@ export default {
       if (usuarioAsignado === this.servicioDetails.usuarioAsignado) {
         axios.put(`http://localhost:8181/observaciones/observacionVisto?IdServicio=${idServicio}`)
 
-      // Actualizar el numero de los no visto del badge del boton
-      const apiUrl1 = `http://localhost:8181/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
-      axios.get(apiUrl1).then((response) => {
-        this.observacionesNoVitso = response.data;
-      })
-
-      // obtner observaciones 2
-      const apiUrl2 = `http://localhost:8181/observaciones?id=${idServicio}`;
-      axios.get(apiUrl2)
-        .then((response) => {
-          this.observaciones = response.data;
+        // Actualizar el numero de los no visto del badge del boton
+        const apiUrl1 = `http://localhost:8181/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
+        axios.get(apiUrl1).then((response) => {
+          this.observacionesNoVitso = response.data;
         })
+
+        // obtner observaciones 2
+        const apiUrl2 = `http://localhost:8181/observaciones?id=${idServicio}`;
+        axios.get(apiUrl2)
+          .then((response) => {
+            this.observaciones = response.data;
+          })
       }
     },
 
@@ -954,7 +954,7 @@ export default {
         // Actualizar el numero de los no visto del badge del boton
         const apiUrl1 = `http://localhost:8181/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
         axios.get(apiUrl1).then((response) => {
-        this.observacionesNoVitso = response.data;
+          this.observacionesNoVitso = response.data;
         })
 
         // obtner observaciones 2

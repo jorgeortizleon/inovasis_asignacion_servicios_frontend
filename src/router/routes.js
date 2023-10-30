@@ -80,6 +80,7 @@ const routes = [
       },
     ],
   },
+  
   { path: "/login", component: () => import("components/auth/LoginForm.vue") },
   { path: "/about",component: () => import("components/About.vue") },
 
