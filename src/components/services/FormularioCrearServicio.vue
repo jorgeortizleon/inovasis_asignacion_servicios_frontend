@@ -207,22 +207,17 @@ export default {
               console.log(this.idUltimoServicioAgregado)
               axios.post("http://localhost:8181/historialServicio/crear?IdServicio=" + this.idUltimoServicioAgregado + "&IdUsuario=" + idusuario.value + "&IdEstadoServicio=1&DescripcionCambio=Servicio creado")
               console.log("ok")
-              // Verifica la respuesta del servidor (puede variar según la API)
               if (response.status === 201) {
-                // Emite un evento llamado 'servicio-creado' para notificar al componente principal
                 this.$emit('servicio-creado');
 
-                // Cierra el diálogo de creación de servicio
                 this.$emit('cerrarDialogo');
 
-                // Muestra un mensaje de éxito
                 this.$q.notify({
                   color: 'positive',
                   icon: 'check',
                   message: 'Servicio creado correctamente.',
                 });
               } else {
-                // Muestra un mensaje de error si la respuesta del servidor no es la esperada
                 this.$q.notify({
                   color: 'negative',
                   icon: 'warning',
@@ -246,16 +241,13 @@ export default {
     },
 
     resetForm() {
-      // Restablecer los valores de los campos del formulario al valor inicial
       this.nuevoServicio.TituloServicio = '';
       this.nuevoServicio.descripcion = '';
-      // Restablecer otros campos si es necesario
     },
   },
   mounted() {
     console.log('El método mounted se ha ejecutado.');
 
-    // Llama al método cargarOpciones para cargar las opciones de Razón Social y Usuario
     this.cargarOpciones();
   },
 };

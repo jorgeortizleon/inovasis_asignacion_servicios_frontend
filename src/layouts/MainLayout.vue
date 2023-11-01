@@ -37,8 +37,8 @@
                   <!-- <div class="text-h6">Servicios</div> -->
                   <div class="text-h6">Servicios</div>
                   <q-list style="min-width: 100px">
-                    <messages-panel :notifications="notifications"
-                      @notification-click="navigateToService"></messages-panel>
+                    <messages-panel :notifications="notifications" @notification-click="navigateToService"
+                      @notification-click2="onNotificationClick2"></messages-panel>
                   </q-list>
                 </q-tab-panel>
                 <q-tab-panel name="tab2" v-if="tab === 'tab2'">
@@ -66,6 +66,12 @@
                 </q-tab-panel>
               </q-tab-panels>
             </q-card>
+            <!-- =======
+            <q-list style="min-width: 100px">
+              <messages-panel :notifications="notifications" @notification-click="navigateToService"
+                @notification-click2="onNotificationClick2"></messages-panel>
+            </q-list>
+            >>>>>>> Stashed changes -->
           </q-menu>
         </q-btn>
 
@@ -121,7 +127,6 @@
         <q-item-label header>
           Menu
         </q-item-label>
-
         <q-item to="/users" active-class="q-item-no-link-highlighting my-menu-link" v-ripple
           :disable="this.permisoUsuarios">
           <q-item-section avatar>
@@ -214,7 +219,7 @@
 import { defineComponent, ref, onMounted } from 'vue'
 import { useAuthStore } from "src/stores/auth";
 import axios from "axios";
-import MessagesPanel from './MessagesPanel.vue' // Importa MessagesPanel
+import MessagesPanel from './MessagesPanel.vue'
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -316,23 +321,31 @@ export default defineComponent({
       }
     },
 
+    onNotificationClick2() {
+
+      this.obtenerCantidadNotificaciones();
+      console.log('Evento recibido en MainLayout.vue');
+    },
     navigateToService(serviceId) {
       this.$router.push(`/historial-servicio/${serviceId}`);
     },
 
     cerrarSesion() {
-      // Your logout/logout logic here
-      // For example, you can redirect the user to the login page
-      // or clear any session data
       console.log("Cerrando sesión...");
-      // Add your logout logic here
     },
 
     obtenerCantidadNotificaciones() {
       const userId = this.userIniciado.idUsuario;
-      axios.get(`http://localhost:8181/servicios/notificaciones/${userId}`)
-        .then((response) => {
-          this.badgeCount = response.data.length;
+      const obtenerNotificacionesServicios = axios.get(`http://localhost:8181/servicios/notificaciones/${userId}`);
+      const obtenerNotificacionesObservaciones = axios.get(`http://localhost:8181/observaciones/noVistoNotifi?IdUsuario=${userId}`);
+
+      Promise.all([obtenerNotificacionesServicios, obtenerNotificacionesObservaciones])
+        .then(([serviciosResponse, observacionesResponse]) => {
+          const notificacionesServicios = serviciosResponse.data.length;
+          const notificacionesObservaciones = observacionesResponse.data.length;
+
+          const totalNotificaciones = notificacionesServicios + notificacionesObservaciones;
+          this.badgeCount = totalNotificaciones;
         })
         .catch((error) => {
           console.error('Error al obtener la cantidad de notificaciones', error);
@@ -384,8 +397,12 @@ export default defineComponent({
 
   mounted() {
     this.obtenerCantidadNotificaciones();
+    this.intervalId = setInterval(this.obtenerCantidadNotificaciones, 10000);
   },
 
+  beforeUnmount() {
+    clearInterval(this.intervalId);
+  },
   setup() {
     const observacionesNotifi = ref([]);
     const tab = ref('tab1')
@@ -400,7 +417,7 @@ export default defineComponent({
     const permisoReportes = ref(true);
     const permisoConfig = ref(true);
     const permisoAcercade = ref(true);
-    const badgeCount = ref(0); // Variable para almacenar la cantidad de notificaciones
+    const badgeCount = ref(0);
     const updateBadgeCount = (count) => {
       badgeCount.value = count;
 
@@ -442,16 +459,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.my-menu-link {
-  border-left: 4px solid #1976D2;
-  color: #1976D2;
-}
-
 .custom-image {
   max-height: 30px;
-  /* Define el alto máximo que desees para la imagen */
   width: auto;
-  /* Permite que el ancho se ajuste automáticamente para mantener la relación de aspecto */
 }
 
 .espacio-left-dropdown {

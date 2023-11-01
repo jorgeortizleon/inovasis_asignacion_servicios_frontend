@@ -63,6 +63,7 @@ const routes = [
         meta: { title: 'Facturas' },
         component: () => import("components/RequisitosView.vue"),
       },
+     
       // { path: '/servicioshistory', component: () => import('components/services/ServiceHistory.vue')},
       {
         meta: { title: 'Información de un servicio' },
