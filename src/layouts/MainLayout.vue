@@ -11,20 +11,66 @@
         <q-toolbar-title>
           {{ pageTitle }}
         </q-toolbar-title>
-        <web-socket></web-socket>
+        <!-- <web-socket></web-socket> -->
 
         <q-space />
-        <q-btn round dense flat color="white" icon="notifications">
+        <q-btn round dense flat color="white" icon="notifications" @click="this.getObservacionesNotifi2">
           <q-badge color="red" text-color="white" floating>
             {{ badgeCount }}
           </q-badge>
           <q-menu>
-            <q-list style="min-width: 100px">
-              <messages-panel :notifications="notifications" @notification-click="navigateToService"></messages-panel>
-            </q-list>
+            <q-card>
+              <q-card-section>
+                <div class="text-h6 text-grey-8">Notificaciones</div>
+                <!-- <div class="text-subtitle2">Aquí podrá ver las observaciones y servicios nuevos o que no ha visto</div> -->
+              </q-card-section>
+              <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary"
+                align="justify">
+                <q-tab name="tab1" label="Servicios" @click="changeTab('tab1')" />
+                <q-tab name="tab2" label="Observaciones" @click="changeTab('tab2')" />
+              </q-tabs>
+
+              <q-separator />
+
+              <q-tab-panels v-model="tab" animated>
+                <q-tab-panel name="tab1" v-if="tab === 'tab1'">
+                  <!-- <div class="text-h6">Servicios</div> -->
+                  <div class="text-h6">Servicios</div>
+                  <q-list style="min-width: 100px">
+                    <messages-panel :notifications="notifications"
+                      @notification-click="navigateToService"></messages-panel>
+                  </q-list>
+                </q-tab-panel>
+                <q-tab-panel name="tab2" v-if="tab === 'tab2'">
+                  <!-- <div class="text-h6">Servicios</div> -->
+                  <div class="text-h6">Observaciones</div>
+                  <q-list style="min-width: 100px">
+                    <div v-if="observacionesNotifi.length > 0">
+                      <q-item style="max-width: 420px" v-for="notification in observacionesNotifi"
+                        :key="notification.idObservacion" clickable v-ripple
+                        @click="handleObservacionesClick(notification.idServicio)">
+                        <q-item-section>
+                          <q-item-label class="text-subtitle2">Servicio: {{ notification.idServicio }}</q-item-label>
+                          <q-item-label>{{ notification.observacion }}</q-item-label>
+                          <q-item-label caption lines="1">{{ notification.userName }}</q-item-label>
+                        </q-item-section>
+                        <q-item-section side>
+                          {{ reformatDateAndTime(notification.fechaRegistro) }}
+                        </q-item-section>
+                      </q-item>
+                    </div>
+                    <div v-else>
+                      <p>No hay observaciones</p>
+                    </div>
+                  </q-list>
+                </q-tab-panel>
+              </q-tab-panels>
+            </q-card>
           </q-menu>
         </q-btn>
-        <q-btn-dropdown flat dropdown-icon="account_circle" :label="this.userIniciado.userName">
+
+        <q-btn-dropdown class="q-ml-sm" color="white" text-color="primary" unelevated rounded
+          dropdown-icon="account_circle" no-icon-animation :label="this.userIniciado.userName">
           <q-card class="no-shadow" bordered>
             <q-card-section class="text-center">
               <!-- <q-avatar size="100px" class="shadow-10">
@@ -62,8 +108,6 @@
         </q-btn-dropdown>
 
         <!-- <div>Usuario: {{ this.puesto }}</div> -->
-
-        <div>Usuario: {{ this.puesto }}</div>
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn round dense flat color="white" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
             @click="$q.fullscreen.toggle()" v-if="$q.screen.gt.sm">
@@ -167,12 +211,13 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { useAuthStore } from "src/stores/auth";
 import axios from "axios";
 import MessagesPanel from './MessagesPanel.vue' // Importa MessagesPanel
+import { useRouter } from 'vue-router';
 
-
+const router = useRouter();
 const useAuth = useAuthStore();
 
 export default defineComponent({
@@ -262,9 +307,19 @@ export default defineComponent({
 
 
   methods: {
+    changeTab(newTabName) {
+      this.tab = newTabName;
+      if (newTabName === 'tab1') {
+        console.log("Tab servicios")
+      } else if (newTabName === 'tab2') {
+        console.log("Tab observaciones")
+      }
+    },
+
     navigateToService(serviceId) {
       this.$router.push(`/historial-servicio/${serviceId}`);
     },
+
     cerrarSesion() {
       // Your logout/logout logic here
       // For example, you can redirect the user to the login page
@@ -272,6 +327,7 @@ export default defineComponent({
       console.log("Cerrando sesión...");
       // Add your logout logic here
     },
+
     obtenerCantidadNotificaciones() {
       const userId = this.userIniciado.idUsuario;
       axios.get(`http://localhost:8181/servicios/notificaciones/${userId}`)
@@ -282,6 +338,7 @@ export default defineComponent({
           console.error('Error al obtener la cantidad de notificaciones', error);
         });
     },
+
     reformatDateAndTime(dateTime) {
       const [date, time] = dateTime.split(' ');
       const [year, month, day] = date.split('-');
@@ -301,17 +358,41 @@ export default defineComponent({
         return Na;
       }
       return texto.charAt(0).toUpperCase();
-    }
+    },
+
+    getObservacionesNotifi2() {
+      try {
+        // const response = axios.get(`http://localhost:8181/observaciones/noVistoNotifi?IdUsuario=${this.idUsuario}`);
+        axios.get(`http://localhost:8181/observaciones/noVistoNotifi?IdUsuario=${this.idUsuario}`).then((resultado) => {
+          this.observacionesNotifi = resultado.data;
+          console.log(this.observacionesNotifi)
+        });
+      } catch (error) {
+        console.error('Error al recuperar las notificaciones de las observaciones ', error);
+      }
+    },
+
+    handleObservacionesClick(serviceId) {
+      this.$router.push({ name: 'home' });
+      setTimeout(() => {
+        this.$router.push({ name: 'historial-servicio', params: { id: serviceId } });
+      }, 0.5);
+
+    },
+
   },
+
   mounted() {
     this.obtenerCantidadNotificaciones();
   },
 
   setup() {
-
+    const observacionesNotifi = ref([]);
+    const tab = ref('tab1')
     const leftDrawerOpen = ref(false)
     const puesto = ref(useAuth.user.nombreCompleto);
     const idRol = ref(useAuth.user.idRol);
+    const idUsuario = ref(useAuth.user.idUsuario);
     const userIniciado = ref(useAuth.user);
     const permisoUsuarios = ref(true);
     const permisoServicios = ref(true);
@@ -324,8 +405,20 @@ export default defineComponent({
       badgeCount.value = count;
 
     };
-    return {
 
+    const getObservacionesNotifi = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8181/observaciones/noVistoNotifi?IdUsuario=${idUsuario.value}`);
+        observacionesNotifi.value = response.data;
+      } catch (error) {
+        console.error('Error al recuperar las notificaciones de las observaciones ', error);
+      }
+    };
+
+    onMounted(getObservacionesNotifi);
+
+    return {
+      observacionesNotifi,
       leftDrawerOpen,
       puesto,
       idRol,
@@ -338,6 +431,8 @@ export default defineComponent({
       updateBadgeCount,
       permisoAcercade,
       userIniciado,
+      tab,
+      idUsuario,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
@@ -358,5 +453,9 @@ export default defineComponent({
   width: auto;
   /* Permite que el ancho se ajuste automáticamente para mantener la relación de aspecto */
 }
+
+.espacio-left-dropdown {
+  padding-left: 10px;
+}
 </style>
-<style scoped></style>
+

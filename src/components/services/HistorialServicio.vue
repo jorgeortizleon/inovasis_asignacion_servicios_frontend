@@ -407,6 +407,8 @@
       </q-card>
     </q-dialog>
 
+    <q-btn color="primary" @click="redirige()" label="Ver más"><q-badge color="red" rounded
+                  floating v-if="observacionesNoVitso > 0">{{ observacionesNoVitso }}</q-badge></q-btn>
   </q-page>
 </template>
 
@@ -967,6 +969,9 @@ export default {
       this.showDialogObservaciones = false
     },
 
+    redirige(){
+      this.$router.push('/historial-servicio/1');
+    },
   },
   mounted() {
     this.loadServices();
