@@ -17,12 +17,14 @@
         </q-item>
     </div>
 </template>
-  
+
 <script>
 import { defineComponent, ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from 'src/stores/auth';
 import { useRouter } from 'vue-router';
+import { configStore } from "src/stores/config.js";
+const configFromStore = configStore();
 
 export default defineComponent({
     name: 'MessagesPanel',
@@ -38,11 +40,11 @@ export default defineComponent({
         const getNotifications = async () => {
             try {
                 const userId = authStore.user.idUsuario;
-                const response = await axios.get(`http://localhost:8181/servicios/notificaciones/${userId}`);
+                const response = await axios.get(configFromStore.ip +`/servicios/notificaciones/${userId}`);
                 notifications.value = response.data;
 
                 for (const notification of notifications.value) {
-                    const serviceResponse = await axios.get(`http://localhost:8181/servicios/servicio/${notification.servicio_id}`);
+                    const serviceResponse = await axios.get(configFromStore.ip +`/servicios/servicio/${notification.servicio_id}`);
                     notification.tituloServicio = serviceResponse.data;
                 }
                 eventHandled.value = false;
@@ -56,7 +58,7 @@ export default defineComponent({
                 router.push('/home');
 
                 try {
-                    await axios.post(`http://localhost:8181/servicios/marcarComoLeida/${notification.idnotificaciones}`);
+                    await axios.post(configFromStore.ip +`/servicios/marcarComoLeida/${notification.idnotificaciones}`);
                 } catch (error) {
                     console.error('Error al marcar la notificación como leída', error);
                 }

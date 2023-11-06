@@ -112,6 +112,8 @@ import { ref } from 'vue';
 import axios from "axios";
 import FormularioCrearUsuario from './FormularioCrearUsuario.vue'; // Asegúrate de ajustar la ruta correcta
 import FormularioEditarUsuario from './FormularioEditarUsuario.vue';
+import { configStore } from "src/stores/config.js";
+const configFromStore = configStore();
 
 const filter = ref('')
 
@@ -198,7 +200,7 @@ export default {
     // Función para obtener el último usuario creado
     async getLastCreatedUser() {
       try {
-        const response = await axios.get('http://localhost:8181/usuarios/nombreUsuarioReciente');
+        const response = await axios.get(configFromStore.ip +'/usuarios/nombreUsuarioReciente');
         this.nombreUsuarioReciente = response.data; // Asigna el nombre de usuario más reciente
       } catch (error) {
         console.error('Error al obtener el último usuario creado:', error);
@@ -207,7 +209,7 @@ export default {
     // Función para obtener los usuarios desde el servidor
     async getUsers() {
       try {
-        const response = await axios.get('http://localhost:8181/usuarios');
+        const response = await axios.get(configFromStore.ip +'/usuarios');
         const responseData = response.data;
 
         // Modificar el campo "estado" para mostrar "Activo" o "Inactivo"
@@ -241,7 +243,7 @@ export default {
     // Método para confirmar la eliminación
     async confirmDeletion() {
       try {
-        await axios.put(`http://localhost:8181/usuarios/borrar/${this.userToDelete.idUsuario}`, {
+        await axios.put(configFromStore.ip +`/usuarios/borrar/${this.userToDelete.idUsuario}`, {
           activo: 0,
         });
 

@@ -162,7 +162,8 @@
 
 
         <q-item to="/requisitos" active-class="q-item-no-link-highlighting my-menu-link" v-ripple
-          :disable="this.permisoFacturas">
+          >
+          <!-- :disable="this.permisoFacturas" -->
           <q-item-section avatar>
             <q-icon name="groups_2" />
           </q-item-section>
@@ -221,6 +222,8 @@ import { useAuthStore } from "src/stores/auth";
 import axios from "axios";
 import MessagesPanel from './MessagesPanel.vue'
 import { useRouter } from 'vue-router';
+import { configStore } from "src/stores/config.js";
+const configFromStore = configStore();
 
 const router = useRouter();
 const useAuth = useAuthStore();
@@ -242,7 +245,7 @@ export default defineComponent({
   created() {
 
 
-    axios.get("http://localhost:8181/permisos/menuUsuarios/" + this.idRol).then((resultado) => {
+    axios.get(configFromStore.ip + "/permisos/menuUsuarios/" + this.idRol).then((resultado) => {
       if (resultado.data === 1) {
         this.permisoUsuarios = false
       } else if (resultado.data === 0) {
@@ -253,7 +256,7 @@ export default defineComponent({
       }
     });
 
-    axios.get("http://localhost:8181/permisos/menuServicios/" + this.idRol).then((resultado) => {
+    axios.get(configFromStore.ip + "/permisos/menuServicios/" + this.idRol).then((resultado) => {
       if (resultado.data === 1) {
         this.permisoServicios = false
       } else if (resultado.data === 0) {
@@ -264,7 +267,7 @@ export default defineComponent({
       }
     });
 
-    axios.get("http://localhost:8181/permisos/menuClientes/" + this.idRol).then((resultado) => {
+    axios.get(configFromStore.ip + "/permisos/menuClientes/" + this.idRol).then((resultado) => {
       if (resultado.data === 1) {
         this.permisoClientes = false
       } else if (resultado.data === 0) {
@@ -275,7 +278,7 @@ export default defineComponent({
       }
     });
 
-    axios.get("http://localhost:8181/permisos/menuReportes/" + this.idRol).then((resultado) => {
+    axios.get(configFromStore.ip + "/permisos/menuReportes/" + this.idRol).then((resultado) => {
       if (resultado.data === 1) {
         this.permisoReportes = false
       } else if (resultado.data === 0) {
@@ -286,7 +289,7 @@ export default defineComponent({
       }
     });
 
-    axios.get("http://localhost:8181/permisos/menuConfig/" + this.idRol).then((resultado) => {
+    axios.get(configFromStore.ip + "/permisos/menuConfig/" + this.idRol).then((resultado) => {
       if (resultado.data === 1) {
         this.permisoConfig = false
       } else if (resultado.data === 0) {
@@ -297,7 +300,7 @@ export default defineComponent({
       }
     });
 
-    axios.get("http://localhost:8181/permisos/menuAcercade/" + this.idRol).then((resultado) => {
+    axios.get(configFromStore.ip + "/permisos/menuAcercade/" + this.idRol).then((resultado) => {
       if (resultado.data === 1) {
         this.permisoAcercade = false
       } else if (resultado.data === 0) {
@@ -336,8 +339,8 @@ export default defineComponent({
 
     obtenerCantidadNotificaciones() {
       const userId = this.userIniciado.idUsuario;
-      const obtenerNotificacionesServicios = axios.get(`http://localhost:8181/servicios/notificaciones/${userId}`);
-      const obtenerNotificacionesObservaciones = axios.get(`http://localhost:8181/observaciones/noVistoNotifi?IdUsuario=${userId}`);
+      const obtenerNotificacionesServicios = axios.get(configFromStore.ip + `/servicios/notificaciones/${userId}`);
+      const obtenerNotificacionesObservaciones = axios.get(configFromStore.ip + `/observaciones/noVistoNotifi?IdUsuario=${userId}`);
 
       Promise.all([obtenerNotificacionesServicios, obtenerNotificacionesObservaciones])
         .then(([serviciosResponse, observacionesResponse]) => {
@@ -375,8 +378,8 @@ export default defineComponent({
 
     getObservacionesNotifi2() {
       try {
-        // const response = axios.get(`http://localhost:8181/observaciones/noVistoNotifi?IdUsuario=${this.idUsuario}`);
-        axios.get(`http://localhost:8181/observaciones/noVistoNotifi?IdUsuario=${this.idUsuario}`).then((resultado) => {
+        // const response = axios.get(configFromStore.ip + `/observaciones/noVistoNotifi?IdUsuario=${this.idUsuario}`);
+        axios.get(configFromStore.ip + `/observaciones/noVistoNotifi?IdUsuario=${this.idUsuario}`).then((resultado) => {
           this.observacionesNotifi = resultado.data;
           console.log(this.observacionesNotifi)
         });
@@ -425,7 +428,7 @@ export default defineComponent({
 
     const getObservacionesNotifi = async () => {
       try {
-        const response = await axios.get(`http://localhost:8181/observaciones/noVistoNotifi?IdUsuario=${idUsuario.value}`);
+        const response = await axios.get(configFromStore.ip + `/observaciones/noVistoNotifi?IdUsuario=${idUsuario.value}`);
         observacionesNotifi.value = response.data;
       } catch (error) {
         console.error('Error al recuperar las notificaciones de las observaciones ', error);

@@ -235,8 +235,10 @@ import { exportFile, useQuasar } from 'quasar'
 import { ref } from 'vue'
 import axios from "axios";
 import { useAuthStore } from "src/stores/auth";
+import { configStore } from "src/stores/config.js";
 
 const useAuth = useAuthStore();
+const configFromStore = configStore();
 
 function wrapCsvValue(val, formatFn) {
   let formatted = formatFn !== void 0
@@ -367,19 +369,19 @@ export default {
   },
 
   created() {
-    axios.get("http://localhost:8181/roles").then((resultado) => {
+    axios.get(configFromStore.ip +"/roles").then((resultado) => {
       this.rows = resultado.data;
     });
 
-    axios.get("http://localhost:8181/roles/totalRoles").then((resultado) => {
+    axios.get(configFromStore.ip +"/roles/totalRoles").then((resultado) => {
       this.numRoles = resultado.data
     });
 
-    axios.get("http://localhost:8181/roles/ultimoRolAgregado").then((resultado) => {
+    axios.get(configFromStore.ip +"/roles/ultimoRolAgregado").then((resultado) => {
       this.ultimoRolAgregado = resultado.data
     });
 
-    axios.get("http://localhost:8181/roles/nombreRol/" + useAuth.user.idRol).then((resultado) => {
+    axios.get(configFromStore.ip +"/roles/nombreRol/" + useAuth.user.idRol).then((resultado) => {
       this.nombreRol = resultado.data
     });
   },
@@ -400,10 +402,10 @@ export default {
       this.ultimoRolAgregado = this.nombreRolNuevo
       this.numRoles++
 
-      axios.post('http://localhost:8181/roles/crear?Nombre=' + this.nombreRolNuevo)
+      axios.post(configFromStore.ip +'/roles/crear?Nombre=' + this.nombreRolNuevo)
         .then(response => {
           console.log('Rol creado con éxito: ' + response.status);
-          axios.get("http://localhost:8181/roles/idUltimoRol")
+          axios.get(configFromStore.ip +"/roles/idUltimoRol")
             .then((resultado) => {
               this.idUltimoRolAgregado = resultado.data;
               if (this.checkbox1 === true) {
@@ -436,14 +438,14 @@ export default {
               } else {
                 this.checkbox6 = 0
               }
-              axios.post("http://localhost:8181/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuUsuario&Estado=" + this.checkbox1)
-              axios.post("http://localhost:8181/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuServicio&Estado=" + this.checkbox2)
-              axios.post("http://localhost:8181/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuClientes&Estado=" + this.checkbox3)
-              axios.post("http://localhost:8181/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuReportes&Estado=" + this.checkbox4)
-              axios.post("http://localhost:8181/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuConfiguracion&Estado=" + this.checkbox5)
-              axios.post("http://localhost:8181/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuAcercade&Estado=" + this.checkbox6)
+              axios.post(configFromStore.ip +"/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuUsuario&Estado=" + this.checkbox1)
+              axios.post(configFromStore.ip +"/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuServicio&Estado=" + this.checkbox2)
+              axios.post(configFromStore.ip +"/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuClientes&Estado=" + this.checkbox3)
+              axios.post(configFromStore.ip +"/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuReportes&Estado=" + this.checkbox4)
+              axios.post(configFromStore.ip +"/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuConfiguracion&Estado=" + this.checkbox5)
+              axios.post(configFromStore.ip +"/permisos/crear?IdRol=" + this.idUltimoRolAgregado + "&NombreMenu=menuAcercade&Estado=" + this.checkbox6)
 
-              axios.get("http://localhost:8181/roles").then((resultado) => {
+              axios.get(configFromStore.ip +"/roles").then((resultado) => {
                 this.rows = resultado.data;
               });
 
@@ -463,7 +465,7 @@ export default {
       this.indexEditar = props2.pageIndex,
         this.idEditar = props2.key,
         this.nombreEditar = props2.row.descripcion,
-        axios.get("http://localhost:8181/permisos/menuUsuarios/" + this.idEditar).then((resultado) => {
+        axios.get(configFromStore.ip +"/permisos/menuUsuarios/" + this.idEditar).then((resultado) => {
           if (resultado.data === 1) {
             this.checkbox1 = true
           } else {
@@ -471,7 +473,7 @@ export default {
           }
         });
 
-      axios.get("http://localhost:8181/permisos/menuServicios/" + this.idEditar).then((resultado) => {
+      axios.get(configFromStore.ip +"/permisos/menuServicios/" + this.idEditar).then((resultado) => {
         if (resultado.data === 1) {
           this.checkbox2 = true
         } else {
@@ -479,7 +481,7 @@ export default {
         }
       });
 
-      axios.get("http://localhost:8181/permisos/menuClientes/" + this.idEditar).then((resultado) => {
+      axios.get(configFromStore.ip +"/permisos/menuClientes/" + this.idEditar).then((resultado) => {
         if (resultado.data === 1) {
           this.checkbox3 = true
         } else {
@@ -487,7 +489,7 @@ export default {
         }
       });
 
-      axios.get("http://localhost:8181/permisos/menuReportes/" + this.idEditar).then((resultado) => {
+      axios.get(configFromStore.ip +"/permisos/menuReportes/" + this.idEditar).then((resultado) => {
         if (resultado.data === 1) {
           this.checkbox4 = true
         } else {
@@ -495,7 +497,7 @@ export default {
         }
       });
 
-      axios.get("http://localhost:8181/permisos/menuConfig/" + this.idEditar).then((resultado) => {
+      axios.get(configFromStore.ip +"/permisos/menuConfig/" + this.idEditar).then((resultado) => {
         if (resultado.data === 1) {
           this.checkbox5 = true
         } else {
@@ -503,7 +505,7 @@ export default {
         }
       });
 
-      axios.get("http://localhost:8181/permisos/menuAcercade/" + this.idEditar).then((resultado) => {
+      axios.get(configFromStore.ip +"/permisos/menuAcercade/" + this.idEditar).then((resultado) => {
         if (resultado.data === 1) {
           this.checkbox6 = true
         } else {
@@ -545,12 +547,12 @@ export default {
       } else {
         this.checkbox6 = 0
       }
-      axios.put(`http://localhost:8181/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox1}&permiso=menuUsuario&idrol=${this.idEditar}`)
-      axios.put(`http://localhost:8181/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox2}&permiso=menuServicio&idrol=${this.idEditar}`)
-      axios.put(`http://localhost:8181/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox3}&permiso=menuClientes&idrol=${this.idEditar}`)
-      axios.put(`http://localhost:8181/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox4}&permiso=menuReportes&idrol=${this.idEditar}`)
-      axios.put(`http://localhost:8181/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox5}&permiso=menuConfiguracion&idrol=${this.idEditar}`)
-      axios.put(`http://localhost:8181/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox6}&permiso=menuAcercade&idrol=${this.idEditar}`)
+      axios.put(configFromStore.ip +`/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox1}&permiso=menuUsuario&idrol=${this.idEditar}`)
+      axios.put(configFromStore.ip +`/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox2}&permiso=menuServicio&idrol=${this.idEditar}`)
+      axios.put(configFromStore.ip +`/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox3}&permiso=menuClientes&idrol=${this.idEditar}`)
+      axios.put(configFromStore.ip +`/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox4}&permiso=menuReportes&idrol=${this.idEditar}`)
+      axios.put(configFromStore.ip +`/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox5}&permiso=menuConfiguracion&idrol=${this.idEditar}`)
+      axios.put(configFromStore.ip +`/permisos/modificarpermisoMenuUsuarios?estado=${this.checkbox6}&permiso=menuAcercade&idrol=${this.idEditar}`)
         .then(response => {
           this.$q.notify({
             type: "info",

@@ -99,9 +99,13 @@
     </q-card-actions>
   </q-card>
 </template>
-  
+
 <script>
 import axios from 'axios';
+// import { configStore } from "src/stores/config.js";
+// const configFromStore = configStore();
+// configFromStore.ip +
+
 
 export default {
   name: 'FormularioEditarUsuario',
@@ -111,6 +115,7 @@ export default {
   data() {
     return {
       resetForm: () => { },
+      ip: 'http://localhost:8181',
 
       usuario: '',
       nombreCompleto: '',
@@ -202,7 +207,7 @@ export default {
   methods: {
     async cargarRolesDesdeServidor() {
       try {
-        const response = await axios.get('http://localhost:8181/roles');
+        const response = await axios.get(this.ip+'/roles');
         this.descripcionesRoles = response.data.map(rol => rol.descripcion);
         this.idsRoles = response.data.map(rol => rol.idRol);
       } catch (error) {
@@ -229,7 +234,7 @@ export default {
             estado: this.estado ? 1 : 0,
           };
 
-          const response = await axios.put(`http://localhost:8181/usuarios/${this.usuarioEditar.idUsuario}`, usuarioEditado);
+          const response = await axios.put(this.ip+`/usuarios/${this.usuarioEditar.idUsuario}`, usuarioEditado);
 
           if (response.status === 200) {
 
@@ -265,5 +270,5 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped></style>

@@ -238,6 +238,9 @@
 import { exportFile, useQuasar } from 'quasar'
 import { ref } from 'vue'
 import axios from "axios";
+import { configStore } from "src/stores/config.js";
+const configFromStore = configStore();
+// configFromStore.ip +
 
 function wrapCsvValue(val, formatFn) {
   let formatted = formatFn !== void 0
@@ -376,23 +379,23 @@ export default {
   },
 
   created() {
-    axios.get("http://localhost:8181/clientes").then((resultado) => {
+    axios.get(configFromStore.ip + "/clientes").then((resultado) => {
       this.rows = resultado.data;
     });
 
-    axios.get("http://localhost:8181/clientes/numTotalClientes").then((resultado) => {
+    axios.get(configFromStore.ip + "/clientes/numTotalClientes").then((resultado) => {
       this.numClientes = resultado.data
     });
 
-    axios.get("http://localhost:8181/clientes/clientesActivos").then((resultado) => {
+    axios.get(configFromStore.ip + "/clientes/clientesActivos").then((resultado) => {
       this.numClientesActivos = resultado.data
     });
 
-    axios.get("http://localhost:8181/clientes/clientesBorrados").then((resultado) => {
+    axios.get(configFromStore.ip + "/clientes/clientesBorrados").then((resultado) => {
       this.numClientesBorrados = resultado.data
     });
 
-    axios.get("http://localhost:8181/clientes/razonsocialClienteReciente").then((resultado) => {
+    axios.get(configFromStore.ip + "/clientes/razonsocialClienteReciente").then((resultado) => {
       this.ultimoCliente = resultado.data
     });
   },
@@ -484,7 +487,7 @@ export default {
       // this.rows.push(clientedto)
       this.ultimoCliente = this.razonSocial
       this.numClientes++
-      axios.post('http://localhost:8181/clientes', clientedto)
+      axios.post(configFromStore.ip + '/clientes', clientedto)
         .then(response => {
           console.log('Cliente creado con éxito: ' + response.status);
           // console.log(response);
@@ -494,10 +497,10 @@ export default {
           this.correo = "";
           this.telefono = "";
           this.estado = "1";
-          axios.get("http://localhost:8181/clientes").then((resultado) => {
+          axios.get(configFromStore.ip + "/clientes").then((resultado) => {
             this.rows = resultado.data;
           });
-          axios.get("http://localhost:8181/clientes/clientesActivos").then((resultado) => {
+          axios.get(configFromStore.ip + "/clientes/clientesActivos").then((resultado) => {
             this.numClientesActivos = resultado.data
           });
           this.$q.notify({
@@ -517,7 +520,7 @@ export default {
           });
         });
 
-      axios.get("http://localhost:8181/clientes").then((resultado) => {
+      axios.get(configFromStore.ip + "/clientes").then((resultado) => {
         this.rows = resultado.data;
       });
 
@@ -561,10 +564,10 @@ export default {
           estado: this.rows[this.indexEditar].estado,
         };
 
-        axios.put(`http://localhost:8181/clientes/${this.idEditar}`, clientedto)
+        axios.put(configFromStore.ip + `/clientes/${this.idEditar}`, clientedto)
           .then(response => {
             console.log('Cliente editado con éxito:');
-            axios.get("http://localhost:8181/clientes/clientesActivos").then((resultado) => {
+            axios.get(configFromStore.ip + "/clientes/clientesActivos").then((resultado) => {
               this.numClientesActivos = resultado.data
             });
             this.$q.notify({
@@ -602,11 +605,11 @@ export default {
       console.log(this.idBorrar)
       console.log(this.indexBorrar)
 
-      axios.get(`http://localhost:8181/clientes/borrar/${this.idBorrar}`)
+      axios.get(configFromStore.ip + `/clientes/borrar/${this.idBorrar}`)
         .then(response => {
           console.log('Cliente eliminado con éxito:', response.status);
           this.rows.splice(this.indexBorrar, 1);
-          axios.get("http://localhost:8181/clientes/clientesActivos").then((resultado) => {
+          axios.get(configFromStore.ip + "/clientes/clientesActivos").then((resultado) => {
             this.numClientesActivos = resultado.data
           });
           this.$q.notify({

@@ -51,9 +51,11 @@
 import axios from "axios";
 import { useQuasar } from "quasar";
 const $q = useQuasar();
-import { useAuthStore } from "src/stores/auth.js";
+import { useAuthStore} from "src/stores/auth.js";
+import { configStore } from "src/stores/config.js";
 import { storeToRefs } from "pinia";
 const useAuth = useAuthStore();
+const configFromStore = configStore();
 
 export default {
   data: () => ({
@@ -66,7 +68,8 @@ export default {
     async autenticar() {
       let response = {};
       try {
-        response = await axios.post("http://localhost:8181/usuarios/login?username=" + this.username + "&password=" + this.password);
+        response = await axios.post(configFromStore.ip + "/usuarios/login?username=" + this.username + "&password=" + this.password);
+        // response = await axios.post("http://192.168.1.72:8181/usuarios/login?username=" + this.username + "&password=" + this.password);
         if (response.status === 200) {
           const { user, logged } = storeToRefs(useAuth);
           user.value = response.data;

@@ -81,6 +81,9 @@
 <script>
 import axios from 'axios';
 import { ref, } from 'vue';
+import { configStore } from "src/stores/config.js";
+const configFromStore = configStore();
+
 
 import { useAuthStore } from "../../stores/auth";
 
@@ -140,7 +143,7 @@ export default {
     async cargarOpciones() {
       try {
         // Realiza una solicitud al servidor para obtener las opciones de Razón Social
-        const responseRazonSocial = await axios.get('http://localhost:8181/clientes/NombreId');
+        const responseRazonSocial = await axios.get(configFromStore.ip +'/clientes/NombreId');
 
         // Transforma la respuesta al formato adecuado
         this.razonSocialOptions = responseRazonSocial.data.map(item => ({
@@ -149,7 +152,7 @@ export default {
         }));
 
         // Realiza una solicitud al servidor para obtener las opciones de Usuario
-        const responseUsuario = await axios.get('http://localhost:8181/usuarios/nombreId');
+        const responseUsuario = await axios.get(configFromStore.ip +'/usuarios/nombreId');
 
         // Verifica la respuesta en la consola
         console.log('Respuesta de Usuario:', responseUsuario.data);
@@ -192,20 +195,20 @@ export default {
 
         //console.log(nuevoServicio);
         // Realiza la solicitud POST al servidor con los datos del nuevo servicio
-        //const response = await axios.post('http://localhost:8181/servicios/crear?IdUsuario'+ idusuario.value +'&IdUAsignado='+ this.nuevoServicio.userName.value+'&IdCliente='+this.nuevoServicio.razonSocial.value+'&Factura=' +this.valoresCheckbox.factura+'&HojaServicio='+this.valoresCheckbox.hojaDeServicio+'&Descripcion='+this.nuevoServicio.descripcion+'&HojaRemision='+this.valoresCheckbox.remision+'&EmpresaPoliza='+this.valoresCheckbox.empresaPoliza+'&TituloServicio='+this.nuevoServicio.tituloservicio );
+        //const response = await axios.post(configFromStore.ip +'/servicios/crear?IdUsuario'+ idusuario.value +'&IdUAsignado='+ this.nuevoServicio.userName.value+'&IdCliente='+this.nuevoServicio.razonSocial.value+'&Factura=' +this.valoresCheckbox.factura+'&HojaServicio='+this.valoresCheckbox.hojaDeServicio+'&Descripcion='+this.nuevoServicio.descripcion+'&HojaRemision='+this.valoresCheckbox.remision+'&EmpresaPoliza='+this.valoresCheckbox.empresaPoliza+'&TituloServicio='+this.nuevoServicio.tituloservicio );
 
 
         // Construir la URL con los parámetros correctamente formateados
-        const url = `http://localhost:8181/servicios/crear?IdUsuario=${idusuario.value}&IdUAsignado=${this.nuevoServicio.userName.value}&IdCliente=${this.nuevoServicio.razonSocial.value}&Factura=${this.valoresCheckbox.factura}&HojaServicio=${this.valoresCheckbox.hojaDeServicio}&Descripcion=${this.nuevoServicio.descripcion}&HojaRemision=${this.valoresCheckbox.remision}&EmpresaPoliza=${this.valoresCheckbox.empresaPoliza}&TituloServicio=${this.nuevoServicio.tituloservicio}`;
+        const url = configFromStore.ip +`/servicios/crear?IdUsuario=${idusuario.value}&IdUAsignado=${this.nuevoServicio.userName.value}&IdCliente=${this.nuevoServicio.razonSocial.value}&Factura=${this.valoresCheckbox.factura}&HojaServicio=${this.valoresCheckbox.hojaDeServicio}&Descripcion=${this.nuevoServicio.descripcion}&HojaRemision=${this.valoresCheckbox.remision}&EmpresaPoliza=${this.valoresCheckbox.empresaPoliza}&TituloServicio=${this.nuevoServicio.tituloservicio}`;
 
         // Realizar la solicitud POST al servidor sin un cuerpo de solicitud
         const response = await axios.post(url).then(response => {
           console.log('Servicio creado con éxito: ' + response.status);
-          axios.get("http://localhost:8181/servicios/idUltimoServicio")
+          axios.get(configFromStore.ip +"/servicios/idUltimoServicio")
             .then((resultado) => {
               this.idUltimoServicioAgregado = resultado.data;
               console.log(this.idUltimoServicioAgregado)
-              axios.post("http://localhost:8181/historialServicio/crear?IdServicio=" + this.idUltimoServicioAgregado + "&IdUsuario=" + idusuario.value + "&IdEstadoServicio=1&DescripcionCambio=Servicio creado")
+              axios.post(configFromStore.ip +"/historialServicio/crear?IdServicio=" + this.idUltimoServicioAgregado + "&IdUsuario=" + idusuario.value + "&IdEstadoServicio=1&DescripcionCambio=Servicio creado")
               console.log("ok")
               if (response.status === 201) {
                 this.$emit('servicio-creado');

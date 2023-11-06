@@ -36,6 +36,9 @@
 
               <template v-slot:top-right="props">
                 <div class="q-mr-md">
+                  <q-btn color="primary" :disable="loading" icon="refresh" @click="this.reloadMethod();" />
+                </div>
+                <div class="q-mr-md">
                   <!-- Agregar menú desplegable para seleccionar el filtro -->
                   <q-select v-model="selectedFilterModel" :options="filterOptions" label="Filtrar" emit-value map-options
                     dense outlined class="q-select-filter" />
@@ -46,7 +49,7 @@
                   </template>
                 </q-input>
                 <q-btn flat round dense :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
-                  @click="toggleTableFullscreen" v-if="mode === 'list'" class="q-px-sm">
+                  @click="props.toggleFullscreen" v-if="mode === 'list'" class="q-px-sm">
                   <q-tooltip :disable="$q.platform.is.mobile" v-close-popup>
                     {{ props.inFullscreen ? 'Exit Fullscreen' : 'Toggle Fullscreen' }}
                   </q-tooltip>
@@ -104,6 +107,8 @@ import { ref } from 'vue';
 import axios from 'axios';
 import FormularioCrearServicio from './FormularioCrearServicio.vue';
 import FormularioEditarServicio from './FormularioEditarServicio.vue';
+import { configStore } from "src/stores/config.js";
+const configFromStore = configStore();
 
 export default {
   name: 'ServiciosPage',
@@ -115,6 +120,7 @@ export default {
 
   data() {
     return {
+      loading: ref(false),
       date: ref(null),
       mode: 'list',
       showDialogCreate: false,
@@ -202,7 +208,7 @@ export default {
   methods: {
     // Función para cargar los servicios desde el backend
     loadServices() {
-      axios.get('http://localhost:8181/servicios')
+      axios.get(configFromStore.ip +'/servicios')
         .then((response) => {
           this.services = response.data;
           this.filteredServices = this.services;
@@ -250,8 +256,22 @@ export default {
       this.servicioAEditar = null; // Limpia los datos del servicio a editar
     },
 
+    reloadMethod() {
+      this.loading = true;
+      this.loadServices();
+      setTimeout(() => {
+        this.loading = false;
+      }, 5000);
+    },
+
   },
+
   mounted() {
+
+    setInterval(() => {
+      this.loadServices();
+    }, 60000);
+
     this.loadServices();
   },
 };

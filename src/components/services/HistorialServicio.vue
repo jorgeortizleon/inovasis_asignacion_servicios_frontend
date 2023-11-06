@@ -418,6 +418,7 @@ import { useAuthStore } from "src/stores/auth";
 import FormularioEditarUsuario from '../users/FormularioEditarUsuario.vue';
 
 
+
 export default {
   name: 'ServiciosPage',
 
@@ -427,6 +428,7 @@ export default {
 
   data() {
     return {
+      ip: 'http://localhost:8181',
       observacionesNoVitso: ref(''),
       observaciones: ref([]),
       useAuth: useAuthStore(),
@@ -539,7 +541,7 @@ export default {
     loadServices() {
       const idServicio = this.$route.params.id;
       this.idServicioGen = idServicio
-      const apiUrl = `http://localhost:8181/historialServicio?idServicio=${idServicio}`;
+      const apiUrl = this.ip+`/historialServicio?idServicio=${idServicio}`;
 
       axios.get(apiUrl)
         .then((response) => {
@@ -572,7 +574,7 @@ export default {
         });
 
 
-      const apiUrl2 = `http://localhost:8181/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
+      const apiUrl2 = this.ip+`/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
       axios.get(apiUrl2).then((response) => {
         this.observacionesNoVitso = response.data;
       })
@@ -583,7 +585,7 @@ export default {
     // Función para cargar los detalles de un servicio específico
     loadServiceDetails() {
       const idServicio = this.$route.params.id; // Obtén el idServicio del URL
-      const apiUrl = `http://localhost:8181/servicios/${idServicio}`; // Reemplaza con la URL correcta para obtener detalles del servicio
+      const apiUrl = this.ip+`/servicios/${idServicio}`; // Reemplaza con la URL correcta para obtener detalles del servicio
 
       axios.get(apiUrl)
         .then((response) => {
@@ -668,7 +670,7 @@ export default {
 
     cargarObservacionDesdeBackend() {
       const idServicio = this.$route.params.id; // Obtén el ID del servicio
-      const apiUrl = `http://localhost:8181/servicios/${idServicio}/observaciones`;
+      const apiUrl = this.ip+`/servicios/${idServicio}/observaciones`;
 
       axios.get(apiUrl)
         .then((response) => {
@@ -685,7 +687,7 @@ export default {
         });
 
       // obtiene y asigna el valor de los checkbox. Requisitos
-      const checkboxRequest = `http://localhost:8181/servicios/obtenerCheckboxServicio/${idServicio}`;
+      const checkboxRequest = this.ip+`/servicios/obtenerCheckboxServicio/${idServicio}`;
       axios.get(checkboxRequest)
         .then((response) => {
           if (response.data.hojaServicio === 1) {
@@ -714,7 +716,7 @@ export default {
         });
 
       // obtiene la descripcion del servicio
-      const descripcionRequest = `http://localhost:8181/servicios/descripcionServicio/${idServicio}`;
+      const descripcionRequest = this.ip+`/servicios/descripcionServicio/${idServicio}`;
       axios.get(descripcionRequest)
         .then((response) => {
           this.descripcionServicio = response.data;
@@ -724,7 +726,7 @@ export default {
         });
 
       // obtner observaciones 2
-      const apiUrl2 = `http://localhost:8181/observaciones?id=${idServicio}`;
+      const apiUrl2 = this.ip+`/observaciones?id=${idServicio}`;
       axios.get(apiUrl2)
         .then((response) => {
           console.log('Observación2 recuperada del backend:', response.data);
@@ -750,7 +752,7 @@ export default {
       }
       const idUsuario = this.useAuth.user.idUsuario
       const idServicio = this.$route.params.id;
-      const apiUrl = `http://localhost:8181/observaciones?IdUsuario=${idUsuario}&IdServicio=${idServicio}&Observacion=${this.nuevaObservacion}`;
+      const apiUrl = this.ip+`/observaciones?IdUsuario=${idUsuario}&IdServicio=${idServicio}&Observacion=${this.nuevaObservacion}`;
       axios.post(apiUrl)
         .then((response) => {
           console.log('Observación guardada con éxito', response.data);
@@ -771,7 +773,7 @@ export default {
             message: 'Error al guardar observación.',
           });
         });
-      const apiUrl2 = `http://localhost:8181/observaciones?id=${idServicio}`;
+      const apiUrl2 = this.ip+`/observaciones?id=${idServicio}`;
       axios.get(apiUrl2)
         .then((response) => {
           console.log('Observación2 recuperada del backend:', response.data);
@@ -796,7 +798,7 @@ export default {
 
       const idUsuario = this.useAuth.user.idUsuario
       const idServicio = this.$route.params.id;
-      const apiUrl = `http://localhost:8181/servicios/editar/${idServicio}`;
+      const apiUrl = this.ip+`/servicios/editar/${idServicio}`;
 
       // Datos a enviar al servidor
       const data = {
@@ -868,7 +870,7 @@ export default {
         this.checkbox4Edit = 0
       }
       const idServicio = this.$route.params.id;
-      axios.put(`http://localhost:8181/servicios/editarRequisitos?Factura=${this.checkbox2Edit}&HojaServicio=${this.checkbox1Edit}&HojaRemision=${this.checkbox3Edit}&EmpresaPoliza=${this.checkbox4Edit}&idServicio=${idServicio}`)
+      axios.put(this.ip+`/servicios/editarRequisitos?Factura=${this.checkbox2Edit}&HojaServicio=${this.checkbox1Edit}&HojaRemision=${this.checkbox3Edit}&EmpresaPoliza=${this.checkbox4Edit}&idServicio=${idServicio}`)
         .then(response => {
           if (this.checkbox1Edit === 1) {
             this.checkbox1 = true
@@ -930,16 +932,16 @@ export default {
       const usuarioAsignado = this.useAuth.user.userName
       this.showDialogObservaciones = true
       if (usuarioAsignado === this.servicioDetails.usuarioAsignado) {
-        axios.put(`http://localhost:8181/observaciones/observacionVisto?IdServicio=${idServicio}`)
+        axios.put(this.ip+`/observaciones/observacionVisto?IdServicio=${idServicio}`)
 
         // Actualizar el numero de los no visto del badge del boton
-        const apiUrl1 = `http://localhost:8181/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
+        const apiUrl1 = this.ip+`/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
         axios.get(apiUrl1).then((response) => {
           this.observacionesNoVitso = response.data;
         })
 
         // obtner observaciones 2
-        const apiUrl2 = `http://localhost:8181/observaciones?id=${idServicio}`;
+        const apiUrl2 = this.ip+`/observaciones?id=${idServicio}`;
         axios.get(apiUrl2)
           .then((response) => {
             this.observaciones = response.data;
@@ -952,13 +954,13 @@ export default {
       const usuarioAsignado = this.useAuth.user.userName
       if (usuarioAsignado === this.servicioDetails.usuarioAsignado) {
         // Actualizar el numero de los no visto del badge del boton
-        const apiUrl1 = `http://localhost:8181/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
+        const apiUrl1 = this.ip+`/observaciones/numeroObservacionesNoVisto?IdServicio=${idServicio}`;
         axios.get(apiUrl1).then((response) => {
           this.observacionesNoVitso = response.data;
         })
 
         // obtner observaciones 2
-        const apiUrl2 = `http://localhost:8181/observaciones?id=${idServicio}`;
+        const apiUrl2 = this.ip+`/observaciones?id=${idServicio}`;
         axios.get(apiUrl2)
           .then((response) => {
             this.observaciones = response.data;

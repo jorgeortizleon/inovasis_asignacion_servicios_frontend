@@ -1,7 +1,7 @@
 <template>
   <q-card>
     <q-card-section>
-      <div class="text-h6">Editar Servicio</div>
+      <div class="text-h6">Editar Servicio </div>
     </q-card-section>
     <q-card-section class="q-pt-none">
       <q-form ref="form">
@@ -153,6 +153,8 @@
 import axios from 'axios';
 import { useAuthStore } from "../../stores/auth";
 import { ref, } from 'vue';
+import { configStore } from "src/stores/config.js";
+const configFromStore = configStore();
 
 export default {
   name: 'FormularioEditarServicio',
@@ -259,8 +261,8 @@ watch: {
       const idusuario = ref(useAuth.user.idUsuario);
 
       // Realiza la solicitud PUT para editar el servicio
-      const url = `http://localhost:8181/historialServicio/crear?IdServicio=${this.idServicio}&IdUsuario=${idusuario.value}&IdEstadoServicio=${this.estado}&DescripcionCambio=${this.solucion}`;
-      //await axios.post(`http://localhost:8181/historialServicio/crear?IdServicio=${this.idServicio}&IdUsuario=${idusuario.value}&IdEstadoServicio=${this.estado}&DescripcionCambio=${this.solucion}`)
+      const url = configFromStore.ip +`/historialServicio/crear?IdServicio=${this.idServicio}&IdUsuario=${idusuario.value}&IdEstadoServicio=${this.estado}&DescripcionCambio=${this.solucion}`;
+      //await axios.post(configFromStore.ip +`/historialServicio/crear?IdServicio=${this.idServicio}&IdUsuario=${idusuario.value}&IdEstadoServicio=${this.estado}&DescripcionCambio=${this.solucion}`)
       const response = await axios.post(url);
 
       // Verifica la respuesta del servidor (puede variar según la API)

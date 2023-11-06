@@ -102,6 +102,8 @@
 
 <script>
 import axios from 'axios';
+import { configStore } from "src/stores/config.js";
+const configFromStore = configStore();
 
 export default {
   props: {
@@ -154,7 +156,7 @@ export default {
 
     async cargarRolesDesdeServidor() {
       try {
-        const response = await axios.get('http://localhost:8181/roles');
+        const response = await axios.get(configFromStore.ip +'/roles');
         this.descripcionesRoles = response.data.map(rol => rol.descripcion);
         this.idsRoles = response.data.map(rol => rol.idRol);
       } catch (error) {
@@ -186,7 +188,7 @@ export default {
               estado: this.estado ? 1 : 0,
             };
 
-            const response = await axios.post('http://localhost:8181/usuarios/crear', userData);
+            const response = await axios.post(configFromStore.ip +'/usuarios/crear', userData);
 
             if (response.status === 201) {
               this.$q.notify({
