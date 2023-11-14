@@ -136,7 +136,8 @@
           <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
           <q-space></q-space>
           <q-btn flat label="Crear" icon-right="add_circle" color="green" @click="botonCrearCliente()"
-            :disable="disableBtn() || formatoNumeroValidoBtn(this.telefono) || formatoCorreoValidoBtn(this.correo) || soloMayusculasSinAcentosBtn(this.razonSocial)" />
+             />
+             <!-- :disable="disableBtn() || formatoNumeroValidoBtn(this.telefono) || formatoCorreoValidoBtn(this.correo) || soloMayusculasSinAcentosBtn(this.razonSocial)" -->
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -209,7 +210,8 @@
           <q-btn flat label="Cerrar" color="red" @click="botonCloseDialogs()" />
           <q-space></q-space>
           <q-btn flat label="Editar" icon-right="edit" color="green" @click="botonEditarCliente()"
-            :disable="disableBtn() || formatoNumeroValidoBtn(this.telefono) || formatoCorreoValidoBtn(this.correo) || soloMayusculasSinAcentosBtn(this.razonSocial)" />
+             />
+             <!-- :disable="disableBtn() || formatoNumeroValidoBtn(this.telefono) || formatoCorreoValidoBtn(this.correo) || soloMayusculasSinAcentosBtn(this.razonSocial)" -->
         </q-card-actions>
       </q-card>
     </q-dialog>

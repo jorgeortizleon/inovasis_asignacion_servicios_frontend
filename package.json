@@ -2,7 +2,7 @@
   "name": "inovasis-asignacion-servicios-frontend",
   "version": "0.0.1",
   "description": "A Quasar Project",
-  "productName": "Quasar App",
+  "productName": "Asignación de Servicios",
   "author": "Jorge Ortiz Leon <jorgeortiz37bbb@gmail.com>",
   "private": true,
   "scripts": {

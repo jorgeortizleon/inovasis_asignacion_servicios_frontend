@@ -115,7 +115,7 @@ export default {
   data() {
     return {
       resetForm: () => { },
-      ip: 'http://localhost:8181',
+      ip: 'http://192.168.1.72:8181',
 
       usuario: '',
       nombreCompleto: '',

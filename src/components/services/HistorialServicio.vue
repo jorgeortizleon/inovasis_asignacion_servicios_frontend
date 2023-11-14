@@ -428,7 +428,7 @@ export default {
 
   data() {
     return {
-      ip: 'http://localhost:8181',
+      ip: 'http://192.168.1.72:8181',
       observacionesNoVitso: ref(''),
       observaciones: ref([]),
       useAuth: useAuthStore(),

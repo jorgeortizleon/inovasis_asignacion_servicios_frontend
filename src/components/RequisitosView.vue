@@ -148,8 +148,8 @@ export default {
       mode: 'list',
       showDialogCreate: false,
       filteredServices: [],
-      filter: '',
-      selectedFilter: '',
+      filter: 'Completado',
+      selectedFilter: 'Completado',
       services: [], // Agrega esta variable
       showDialogEdit: false, // Variable para controlar la visibilidad del cuadro de diálogo de edición
       servicioAEditar: null, // Variable para almacenar el servicio que se va a editar
@@ -214,9 +214,9 @@ export default {
     filterOptions() {
       // Define las opciones de filtro por estado
       return [
+        { label: 'Completado', value: 'Completado' },
         { label: 'Todos', value: '' },
         { label: 'Inicio', value: 'Inicio' },
-        { label: 'Completado', value: 'Completado' },
         { label: 'En Proceso', value: 'En Proceso' },
         { label: 'Pendiente', value: 'Pendiente' },
         { label: 'No Completado', value: 'No Completado' },

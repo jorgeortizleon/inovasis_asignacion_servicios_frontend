@@ -162,13 +162,12 @@
 
 
         <q-item to="/requisitos" active-class="q-item-no-link-highlighting my-menu-link" v-ripple
-          >
-          <!-- :disable="this.permisoFacturas" -->
+        :disable="this.permisoServicios" >
           <q-item-section avatar>
             <q-icon name="groups_2" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Facturas</q-item-label>
+            <q-item-label>Servicios Concluidos</q-item-label>
             <q-item-label caption>Facturas, Remisión o Póliza</q-item-label>
           </q-item-section>
         </q-item>
