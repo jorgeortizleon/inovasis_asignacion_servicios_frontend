@@ -19,7 +19,7 @@
             <div class="q-mr-md"></div> <!-- Espacio pequeño -->
             <div class="col">
               <!-- Selector QSelect para Usuario -->
-              <q-select filled v-model="nuevoServicio.userName" label="Usuario" hint="Seleccione el userName" dense
+              <q-select filled v-model="nuevoServicio.nombreCompleto" label="Usuario" hint="Seleccione el usuario" dense
                 :options="usuarioOptions">
                 <template v-slot:prepend>
                   <q-icon name="account_circle" />
@@ -98,6 +98,7 @@ export default {
       nuevoServicio: ref({
         razonSocial: '',
         userName: '',
+        nombreCompleto: '',
         tituloservicio: '',
         descripcion: '',
       }),
@@ -143,7 +144,7 @@ export default {
     async cargarOpciones() {
       try {
         // Realiza una solicitud al servidor para obtener las opciones de Razón Social
-        const responseRazonSocial = await axios.get(configFromStore.ip +'/clientes/NombreId');
+        const responseRazonSocial = await axios.get(configFromStore.ip + '/clientes/NombreId');
 
         // Transforma la respuesta al formato adecuado
         this.razonSocialOptions = responseRazonSocial.data.map(item => ({
@@ -152,7 +153,7 @@ export default {
         }));
 
         // Realiza una solicitud al servidor para obtener las opciones de Usuario
-        const responseUsuario = await axios.get(configFromStore.ip +'/usuarios/nombreId');
+        const responseUsuario = await axios.get(configFromStore.ip + '/usuarios/nombreId');
 
         // Verifica la respuesta en la consola
         console.log('Respuesta de Usuario:', responseUsuario.data);
@@ -160,7 +161,7 @@ export default {
         // Transforma la respuesta al formato adecuado
         this.usuarioOptions = responseUsuario.data.map(item => ({
           value: item.idUsuario, // Usa un valor único como "idUsuario" como value
-          label: item.userName, // Usa "userName" como label
+          label: item.nombreCompleto, // Usa "nombreCompleto" como label
         }));
         // Forzar una actualización del componente QSelect
         this.$forceUpdate();
@@ -199,16 +200,16 @@ export default {
 
 
         // Construir la URL con los parámetros correctamente formateados
-        const url = configFromStore.ip +`/servicios/crear?IdUsuario=${idusuario.value}&IdUAsignado=${this.nuevoServicio.userName.value}&IdCliente=${this.nuevoServicio.razonSocial.value}&Factura=${this.valoresCheckbox.factura}&HojaServicio=${this.valoresCheckbox.hojaDeServicio}&Descripcion=${this.nuevoServicio.descripcion}&HojaRemision=${this.valoresCheckbox.remision}&EmpresaPoliza=${this.valoresCheckbox.empresaPoliza}&TituloServicio=${this.nuevoServicio.tituloservicio}`;
+        const url = configFromStore.ip + `/servicios/crear?IdUsuario=${idusuario.value}&IdUAsignado=${this.nuevoServicio.userName.value}&IdCliente=${this.nuevoServicio.razonSocial.value}&Factura=${this.valoresCheckbox.factura}&HojaServicio=${this.valoresCheckbox.hojaDeServicio}&Descripcion=${this.nuevoServicio.descripcion}&HojaRemision=${this.valoresCheckbox.remision}&EmpresaPoliza=${this.valoresCheckbox.empresaPoliza}&TituloServicio=${this.nuevoServicio.tituloservicio}`;
 
         // Realizar la solicitud POST al servidor sin un cuerpo de solicitud
         const response = await axios.post(url).then(response => {
           console.log('Servicio creado con éxito: ' + response.status);
-          axios.get(configFromStore.ip +"/servicios/idUltimoServicio")
+          axios.get(configFromStore.ip + "/servicios/idUltimoServicio")
             .then((resultado) => {
               this.idUltimoServicioAgregado = resultado.data;
               console.log(this.idUltimoServicioAgregado)
-              axios.post(configFromStore.ip +"/historialServicio/crear?IdServicio=" + this.idUltimoServicioAgregado + "&IdUsuario=" + idusuario.value + "&IdEstadoServicio=1&DescripcionCambio=Servicio creado")
+              axios.post(configFromStore.ip + "/historialServicio/crear?IdServicio=" + this.idUltimoServicioAgregado + "&IdUsuario=" + idusuario.value + "&IdEstadoServicio=1&DescripcionCambio=Servicio creado")
               console.log("ok")
               if (response.status === 201) {
                 this.$emit('servicio-creado');
