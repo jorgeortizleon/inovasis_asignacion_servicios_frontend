@@ -200,17 +200,15 @@ export default {
 
 
         // Construir la URL con los parámetros correctamente formateados
-        const url = configFromStore.ip + `/servicios/crear?IdUsuario=${idusuario.value}&IdUAsignado=${this.nuevoServicio.userName.value}&IdCliente=${this.nuevoServicio.razonSocial.value}&Factura=${this.valoresCheckbox.factura}&HojaServicio=${this.valoresCheckbox.hojaDeServicio}&Descripcion=${this.nuevoServicio.descripcion}&HojaRemision=${this.valoresCheckbox.remision}&EmpresaPoliza=${this.valoresCheckbox.empresaPoliza}&TituloServicio=${this.nuevoServicio.tituloservicio}`;
+        const url = configFromStore.ip + `/servicios/crear?IdUsuario=${idusuario.value}&IdUAsignado=${this.nuevoServicio.nombreCompleto.value}&IdCliente=${this.nuevoServicio.razonSocial.value}&Factura=${this.valoresCheckbox.factura}&HojaServicio=${this.valoresCheckbox.hojaDeServicio}&Descripcion=${this.nuevoServicio.descripcion}&HojaRemision=${this.valoresCheckbox.remision}&EmpresaPoliza=${this.valoresCheckbox.empresaPoliza}&TituloServicio=${this.nuevoServicio.tituloservicio}`;
 
         // Realizar la solicitud POST al servidor sin un cuerpo de solicitud
         const response = await axios.post(url).then(response => {
-          console.log('Servicio creado con éxito: ' + response.status);
           axios.get(configFromStore.ip + "/servicios/idUltimoServicio")
             .then((resultado) => {
               this.idUltimoServicioAgregado = resultado.data;
               console.log(this.idUltimoServicioAgregado)
               axios.post(configFromStore.ip + "/historialServicio/crear?IdServicio=" + this.idUltimoServicioAgregado + "&IdUsuario=" + idusuario.value + "&IdEstadoServicio=1&DescripcionCambio=Servicio creado")
-              console.log("ok")
               if (response.status === 201) {
                 this.$emit('servicio-creado');
 
