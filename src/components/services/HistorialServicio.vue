@@ -37,8 +37,44 @@
           </q-card>
         </div>
 
+        <!-- Verificación y muestra de las nuevas tarjetas -->
+        <template v-if="showNewCards">
+          <!-- Nueva Tarjeta 1 -->
+          <div class="col-md-2 col-sm-6 col-xs-6">
+            <q-card>
+              <q-card-section :class="estadoColor">
+                <div class="row">
+                  <div class="col-10">
+                    <div class="text-h6">Último Estado</div>
+                    <div class="text-h5">
+                      <!-- <q-icon name="arrow_downward" /> -->
+                      {{ items[2].value }} <!-- Usar el valor de % Cambio -->
+                    </div>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+
+          <!-- Nueva Tarjeta 2 -->
+          <div class="col-md-2 col-sm-6 col-xs-6">
+            <q-card>
+              <q-card-section :class="estadoColor" style="height: 95px">
+                <div class="row">
+                  <div class="col-10">
+                    <div class="text-h6">Tiempo</div>
+                    <div class="text-subtitle2">
+                      {{ formatTime(tiempoCalculado) }}
+                    </div>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </template>
+
         <!-- Tarjeta de Último Estado -->
-        <div class="col-md-4 col-sm-12 col-xs-12">
+        <div v-else class="col-md-4 col-sm-12 col-xs-12">
           <q-card>
             <q-card-section :class="estadoColor">
               <div class="row">
@@ -46,7 +82,7 @@
                   <div class="text-h6">Último Estado</div>
                   <div class="text-h5">
                     <!-- <q-icon name="arrow_downward" /> -->
-                    {{ items[2].value }} <!-- Usar el valor de % Cambio -->
+                    {{ servicioDetails.estado === 'Completado' ? 'Completado' : items[2].value }}
                   </div>
                 </div>
                 <div class="col-2">
@@ -412,7 +448,7 @@
 
 <script>
 
-import { ref, } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from "src/stores/auth";
 import FormularioEditarUsuario from '../users/FormularioEditarUsuario.vue';
@@ -428,6 +464,7 @@ export default {
 
   data() {
     return {
+      tiempoCalculado: null,
       ip: 'http://localhost:8181',
       observacionesNoVitso: ref(''),
       observaciones: ref([]),
@@ -510,6 +547,12 @@ export default {
     };
   },
   computed: {
+    showNewCards() {
+      return (
+        this.filteredServices.length > 0 &&
+        this.filteredServices[this.filteredServices.length - 1].descripcion === 'Completado'
+      );
+    },
     ultimoEstadoTexto() {
       if (this.servicioDetails.estado === 'Completado') {
         return 'Completado';
@@ -525,7 +568,9 @@ export default {
         return 'Desconocido'; // Puedes cambiar esto a un valor predeterminado si es necesario
       }
     },
-
+    mostrarTiempoCompletado() {
+      return this.servicioDetails.estado === 'Completado';
+    },
     mostrarCamposAdicionales() {
       return (
         this.servicioDetails.empresaPoliza === 1 ||
@@ -537,6 +582,28 @@ export default {
 
   },
   methods: {
+    formatTime(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+
+      if (hours > 0 && minutes > 0) {
+        return `${hours} hora${hours > 1 ? 's' : ''} ${minutes} minuto${minutes > 1 ? 's' : ''}`;
+      } else if (hours > 0) {
+        return `${hours} hora${hours > 1 ? 's' : ''}`;
+      } else {
+        return `${minutes} minuto${minutes > 1 ? 's' : ''}`;
+      }
+    },
+
+    async calcularTiempo(idServicio) {
+      try {
+        const response = await axios.get(`http://localhost:8181/historialServicio/calcularTiempo/${idServicio}`);
+        this.tiempoCalculado = response.data.tiempoTotal;
+      } catch (error) {
+        console.error('Error al calcular el tiempo:', error);
+        this.tiempoCalculado = 'Error al calcular el tiempo';
+      }
+    },
     // Función para cargar los hsitorial de los servicios desde el backend
     loadServices() {
       const idServicio = this.$route.params.id;
@@ -973,7 +1040,18 @@ export default {
       this.$router.push('/historial-servicio/1');
     },
   },
+  watch: {
+    'servicioDetails.idServicio': function (newIdServicio) {
+      if (this.mostrarTiempoCompletado) {
+        this.calcularTiempo(newIdServicio);
+      }
+    },
+  },
   mounted() {
+    // Realiza la llamada inicial al cargar el componente si el estado es "Completado"
+    if (this.mostrarTiempoCompletado) {
+      this.calcularTiempo(this.servicioDetails.idServicio);
+    }
     this.loadServices();
     this.loadServiceDetails();
     this.cargarObservacionDesdeBackend();
