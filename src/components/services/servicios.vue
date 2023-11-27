@@ -35,6 +35,28 @@
               no-data-label="No hay Servicios" no-results-label="No se encuentra un servicio que coincida">
 
               <template v-slot:top-right="props">
+                <div class="q-pa-md">
+                  <!-- <div class="q-mb-sm">
+                    <q-badge color="teal">
+                      Servicios: {{ currentDate }}
+                    </q-badge>
+                  </div> -->
+                </div>
+                <div class="q-mr-md">
+                  <!-- Botón Calendario -->
+                  <q-btn icon="event" round color="primary" @click="openDatePicker">
+                    <q-popup-proxy @before-show="updateProxy" cover transition-show="scale" transition-hide="scale">
+                      <q-date v-model="proxyDate">
+                        <div class="row items-center justify-end q-gutter-sm">
+                          <q-btn label="Cancel" color="primary" flat v-close-popup />
+                          <q-btn label="OK" color="primary" flat @click="saveDate" v-close-popup />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-btn>
+                </div>
+
+                <!-- Contenedor para el botón de recarga -->
                 <div class="q-mr-md">
                   <q-btn color="primary" :disable="loading" icon="refresh" @click="this.reloadMethod();" />
                 </div>
@@ -109,17 +131,28 @@ import FormularioCrearServicio from './FormularioCrearServicio.vue';
 import FormularioEditarServicio from './FormularioEditarServicio.vue';
 import { configStore } from "src/stores/config.js";
 const configFromStore = configStore();
+import { Quasar, date } from 'quasar';
+import es from 'quasar/lang/es';
 
+Quasar.lang.set(es);
 export default {
   name: 'ServiciosPage',
 
   components: {
     FormularioCrearServicio,
     FormularioEditarServicio
-  },
 
+  },
+  watch: {
+    selectedDate(newDate) {
+      // Maneja el cambio en la fecha del filtro
+      this.updateCurrentDate(newDate);
+    },
+  },
   data() {
     return {
+      currentDate: '', // Nueva variable para la fecha actual
+      selectedDate: null,
       loading: ref(false),
       date: ref(null),
       mode: 'list',
@@ -207,17 +240,57 @@ export default {
   },
   methods: {
     // Función para cargar los servicios desde el backend
+
     loadServices() {
-      axios.get(configFromStore.ip +'/servicios')
+      const formattedDate = this.selectedDate ? this.selectedDate.replaceAll('/', '-') : '';
+
+      const url = formattedDate
+        ? `${configFromStore.ip}/servicios/porFecha?fecha=${formattedDate}`
+        : `${configFromStore.ip}/servicios`;
+
+      axios.get(url)
         .then((response) => {
           this.services = response.data;
           this.filteredServices = this.services;
           this.updateCardValues();
-          console.log('Servicios cargados:', this.services); // Agrega este console.log
+          console.log('Servicios cargados:', this.services);
         })
         .catch((error) => {
           console.error('Error al cargar los servicios:', error);
         });
+    },
+    openDatePicker() {
+      // Abre el selector de fecha
+      this.$refs.myTable.showDatePopup();
+    },
+    setToday() {
+      // Configura la fecha actual en el calendario y actualiza la variable currentDate
+      const today = new Date();
+      this.proxyDate = today.toISOString();
+      this.currentDate = today.toLocaleDateString();
+    },
+    updateCurrentDate(date) {
+      // Actualiza la variable currentDate cuando cambia la fecha del filtro
+      const parsedDate = new Date(date);
+      this.currentDate = parsedDate.toLocaleDateString();
+    },
+    updateProxy() {
+      // ... (otros códigos existentes) ...
+
+      // Actualiza la fecha seleccionada cuando se elige una nueva fecha en el popup de fecha
+      this.selectedDate = this.proxyDate;
+
+      // Carga los servicios para la nueva fecha
+      this.loadServices(this.selectedDate);
+    },
+    saveDate() {
+      // ... (otros códigos existentes) ...
+
+      // Actualiza la fecha seleccionada cuando se elige una nueva fecha en el popup de fecha
+      this.selectedDate = this.proxyDate;
+
+      // Carga los servicios para la nueva fecha
+      this.loadServices(this.selectedDate);
     },
     filterServices() {
       if (this.selectedFilter === '') {
@@ -267,12 +340,18 @@ export default {
   },
 
   mounted() {
+    this.setToday();
 
     setInterval(() => {
       this.loadServices();
     }, 60000);
 
-    this.loadServices();
+    // Verifica si hay una fecha seleccionada y la utiliza, de lo contrario, carga los servicios sin filtrar
+    if (this.selectedDate) {
+      this.loadServices(this.selectedDate);
+    } else {
+      this.loadServices();
+    }
   },
 };
 </script>
