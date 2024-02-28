@@ -54,7 +54,12 @@
                     'Toggle Fullscreen' }}
                   </q-tooltip>
                 </q-btn>
+                <div class="q-pa-md q-gutter-sm">
+
                 <q-btn color="primary" label="Crear Cliente" @click="showDialogCreate = true" />
+                <q-btn round  color="red" icon="picture_as_pdf" href="http://localhost:8181/clientes/exportarClientesPDF" />
+                <q-btn round  color="green" icon="insert_drive_file" href="http://localhost:8181/clientes/exportarClientesExcel" />
+              </div>
               </template>
               <template v-slot:body-cell-actions="props2">
                 <q-td :props="props2" class="q-gutter-sm">
